@@ -1,0 +1,10 @@
+{
+  "/dashboard/page": "app/dashboard/page.js",
+  "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
+  "/api/flights/[id]/route": "app/api/flights/[id]/route.js",
+  "/api/flights/route": "app/api/flights/route.js",
+  "/api/editor/metadata/route": "app/api/editor/metadata/route.js",
+  "/demo/page": "app/demo/page.js",
+  "/pricing/page": "app/pricing/page.js"
+}

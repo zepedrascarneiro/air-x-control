@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CONTROLLER
+  VIEWER
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String?   @unique
+  role      UserRole  @default(VIEWER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  flightsAsPilot  Flight[] @relation("FlightPilot")
+  flightsAsPayer  Flight[] @relation("FlightPayer")
+  expenses        Expense[]
+}
+
+model Aircraft {
+  id             String    @id @default(cuid())
+  tailNumber     String    @unique
+  model          String
+  manufacturer   String?
+  year           Int?
+  status         String?   @default("AVAILABLE")
+  totalHours     Decimal?  @default(0)
+  nextMaintenance DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  flights        Flight[]
+}
+
+model Flight {
+  id                  String    @id @default(cuid())
+  flightDate          DateTime
+  origin              String
+  destination         String
+  planSequence        Int?
+  legSequence         Int?
+  categoryCode        Int?
+  distanceNm          Decimal?
+  hobbsStart          Decimal?
+  hobbsEnd            Decimal?
+  durationHours       Decimal?
+  baseAbsorption      Decimal?  @default(0)
+  baseFixedAbsorption Decimal?  @default(0)
+  baseTax             Decimal?  @default(0)
+  baseFixedTax        Decimal?  @default(0)
+  travelExpenses      Decimal?  @default(0)
+  maintenanceExpenses Decimal?  @default(0)
+  totalCost           Decimal?  @default(0)
+  notes               String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  pilotId  String? 
+  payerId  String?
+  aircraftId String?
+
+  pilot    User?     @relation("FlightPilot", fields: [pilotId], references: [id])
+  payer    User?     @relation("FlightPayer", fields: [payerId], references: [id])
+  aircraft Aircraft? @relation(fields: [aircraftId], references: [id])
+
+  expenses Expense[]
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  expenseDate DateTime
+  category    String
+  amount      Decimal
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  paidById  String?
+  flightId  String?
+
+  paidBy    User?   @relation(fields: [paidById], references: [id])
+  flight    Flight? @relation(fields: [flightId], references: [id])
+}
