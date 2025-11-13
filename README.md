@@ -38,6 +38,7 @@ Bem-vindo ao projeto Air X. Este repositório contém um app Next.js focado em d
 - `npm run lint` — lint com ESLint
 - `npm run prisma:generate` — gera o client Prisma
 - `npm run prisma:migrate` — aplica migrations (deploy)
+- `scripts/deploy.sh` — helper que instala dependências, roda lint/build e, se estiver configurado, aciona o `doctl apps update` com as credenciais do DigitalOcean
 
 ## Documentação
 
@@ -47,6 +48,19 @@ Bem-vindo ao projeto Air X. Este repositório contém um app Next.js focado em d
 - Autenticação: `docs/authentication.md`
 - Páginas/UX: `docs/ui-pages.md`
 - Dashboard (detalhado): `docs/dashboard-overview.md`
+
+## Integração contínua e deploy
+
+- Há um workflow GitHub Actions em `.github/workflows/ci.yml` que roda lint e build em pushes e pull requests na branch `main`. Ele garante que cada alteração compile antes de ir para produção.
+- O helper `scripts/deploy.sh` executa `npm install`, `npm run lint` e `npm run build`. Se você precisar acionar o DigitalOcean App Platform a partir do mesmo passo, preencha as variáveis de ambiente `DO_API_TOKEN` e `DO_APP_ID` e mantenha um arquivo `digitalocean/app.yaml` com a especificação do app.
+- Para rodar o helper manualmente:
+
+  ```bash
+  chmod +x scripts/deploy.sh
+  DO_API_TOKEN="<token>" DO_APP_ID="<app-id>" scripts/deploy.sh
+  ```
+
+  Se as variáveis não estiverem disponíveis, o script apenas prepara e valida o build localmente.
 
 ---
 

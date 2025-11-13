@@ -50,8 +50,8 @@ type FlightItem = {
   legSequence?: number | null;
   categoryCode?: number | null;
   distanceNm?: number | string | null;
-  hobbsStart?: number | string | null;
-  hobbsEnd?: number | string | null;
+  fuelStart?: number | string | null;
+  fuelEnd?: number | string | null;
   durationHours?: number | string | null;
   baseAbsorption?: number | string | null;
   baseFixedAbsorption?: number | string | null;
@@ -731,9 +731,9 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
       planSequence: undefined,
       legSequence: undefined,
       categoryCode: undefined,
-      distanceNm: undefined,
-      hobbsStart: undefined,
-      hobbsEnd: undefined,
+  distanceNm: undefined,
+  fuelStart: undefined,
+  fuelEnd: undefined,
       durationHours: undefined,
       baseAbsorption: undefined,
       baseFixedAbsorption: undefined,
@@ -771,8 +771,8 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
         legSequence: parseNumeric(editingFlight.legSequence),
         categoryCode: parseNumeric(editingFlight.categoryCode),
         distanceNm: parseNumeric(editingFlight.distanceNm),
-        hobbsStart: parseNumeric(editingFlight.hobbsStart),
-        hobbsEnd: parseNumeric(editingFlight.hobbsEnd),
+  fuelStart: parseNumeric(editingFlight.fuelStart),
+  fuelEnd: parseNumeric(editingFlight.fuelEnd),
         durationHours: parseNumeric(editingFlight.durationHours),
         baseAbsorption: parseNumeric(editingFlight.baseAbsorption),
         baseFixedAbsorption: parseNumeric(editingFlight.baseFixedAbsorption),
@@ -1143,8 +1143,8 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
 
             <div className="grid grid-cols-3 gap-4 md:col-span-2">
               {([
-                ["hobbsStart", "Hobbs início"],
-                ["hobbsEnd", "Hobbs final"],
+                ["fuelStart", "Combustível inicial"],
+                ["fuelEnd", "Combustível final"],
                 ["travelExpenses", "Despesas viagem"],
               ] as const).map(([field, label]) => (
                 <div key={field}>

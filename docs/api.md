@@ -35,8 +35,8 @@ Veja `docs/authentication.md` para detalhes de payload e cookies.
       "destination": "SBRJ",
       "pilotId": "...",
       "aircraftId": "...",
-      "hobbsStart": 123.4,
-      "hobbsEnd": 124.8,
+      "fuelStart": 123.4,
+      "fuelEnd": 124.8,
       "durationHours": 1.4,
       "totalCost": 3500
     }

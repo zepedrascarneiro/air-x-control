@@ -44,7 +44,7 @@ Resumo dos modelos definidos em `prisma/schema.prisma`.
 - origin / destination (string)
 - planSequence / legSequence (int?)
 - categoryCode (int?)
-- distanceNm, hobbsStart, hobbsEnd, durationHours (Decimal?)
+- distanceNm, fuelStart, fuelEnd, durationHours (Decimal?)
 - baseAbsorption, baseFixedAbsorption, baseTax, baseFixedTax (Decimal?)
 - travelExpenses, maintenanceExpenses, totalCost (Decimal?)
 - notes (string?)
