@@ -1,1 +1,11 @@
 node_modules
+.next
+out
+.vercel
+yarn.lock
+pnpm-lock.yaml
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
