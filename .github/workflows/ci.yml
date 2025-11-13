@@ -30,3 +30,24 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+  deploy:
+    needs: test-and-build
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install doctl CLI
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DO_API_TOKEN }}
+
+      - name: Trigger DigitalOcean App Platform deployment
+        run: |
+          doctl apps update ${{ secrets.DO_APP_ID }} \
+            --force-rebuild \
+            --wait \
+            --no-header

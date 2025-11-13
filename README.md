@@ -51,16 +51,31 @@ Bem-vindo ao projeto Air X. Este repositório contém um app Next.js focado em d
 
 ## Integração contínua e deploy
 
-- Há um workflow GitHub Actions em `.github/workflows/ci.yml` que roda lint e build em pushes e pull requests na branch `main`. Ele garante que cada alteração compile antes de ir para produção.
-- O helper `scripts/deploy.sh` executa `npm install`, `npm run lint` e `npm run build`. Se você precisar acionar o DigitalOcean App Platform a partir do mesmo passo, preencha as variáveis de ambiente `DO_API_TOKEN` e `DO_APP_ID` e mantenha um arquivo `digitalocean/app.yaml` com a especificação do app.
-- Para rodar o helper manualmente:
+### GitHub Actions (automático)
 
-  ```bash
-  chmod +x scripts/deploy.sh
-  DO_API_TOKEN="<token>" DO_APP_ID="<app-id>" scripts/deploy.sh
-  ```
+O workflow em `.github/workflows/ci.yml` roda **automaticamente** em cada push para `main`:
 
-  Se as variáveis não estiverem disponíveis, o script apenas prepara e valida o build localmente.
+1. Instala dependências
+2. Executa lint
+3. Roda build
+4. **Se tudo passar**, dispara um deploy automático no DigitalOcean App Platform
+
+**Pré-requisitos para ativar o deploy automático:**
+
+- Adicione dois segredos no GitHub (Settings → Secrets and variables → Actions):
+  - `DO_API_TOKEN`: seu token de API do DigitalOcean
+  - `DO_APP_ID`: o ID da sua aplicação no DigitalOcean
+
+Após adicionar os segredos, qualquer push para `main` que passar no lint e build acionará automaticamente um redeployment no DigitalOcean App Platform.
+
+### Deploy manual
+
+Se preferir rodar localmente, use o helper:
+
+```bash
+chmod +x scripts/deploy.sh
+DO_API_TOKEN="<token>" DO_APP_ID="<app-id>" scripts/deploy.sh
+```
 
 ---
 
