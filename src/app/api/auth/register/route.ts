@@ -11,6 +11,8 @@ import {
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validators";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const allowSelfSignup = process.env.ALLOW_SELF_SIGNUP !== "false";

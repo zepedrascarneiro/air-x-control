@@ -4,6 +4,8 @@ import { getManagerUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { flightSchema } from "@/lib/validators";
 
+export const dynamic = "force-dynamic";
+
 const flightUpdateSchema = flightSchema.partial();
 
 function buildFlightUpdateData(input: Record<string, unknown>) {

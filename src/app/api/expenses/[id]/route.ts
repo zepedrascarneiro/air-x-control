@@ -6,6 +6,8 @@ import { expenseSchema } from "@/lib/validators";
 
 const expenseUpdateSchema = expenseSchema.partial();
 
+export const dynamic = "force-dynamic";
+
 function buildExpenseUpdateData(input: Record<string, unknown>) {
   const data: Record<string, unknown> = {};
 

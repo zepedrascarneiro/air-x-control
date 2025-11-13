@@ -6,6 +6,8 @@ import { PLAN_CONFIG } from "@/lib/config";
 import { prisma } from "@/lib/prisma";
 import { aircraftSchema } from "@/lib/validators";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const aircraft = await prisma.aircraft.findMany({
     orderBy: { tailNumber: "asc" },

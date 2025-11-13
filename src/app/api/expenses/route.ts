@@ -4,6 +4,8 @@ import { getManagerUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { expenseSchema } from "@/lib/validators";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const expenses = await prisma.expense.findMany({
     orderBy: { expenseDate: "desc" },

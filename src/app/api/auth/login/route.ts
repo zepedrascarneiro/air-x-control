@@ -15,6 +15,8 @@ import { loginSchema } from "@/lib/validators";
 
 const INVALID_CREDENTIALS_MESSAGE = "Credenciais inválidas";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   try {
     const json = await request.json();
