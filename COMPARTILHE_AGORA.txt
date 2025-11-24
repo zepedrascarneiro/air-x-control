@@ -1,0 +1,71 @@
+# 🚁 AIR X - COMPARTILHE COM SEU AMIGO AGORA!
+
+## 🎯 LINK IMEDIATO
+
+```
+http://192.168.0.240:3000
+```
+
+### Credenciais:
+```
+Email: admin@airx.com
+Senha: Senha123!
+```
+
+---
+
+## ⚠️ IMPORTANTE
+
+Seu amigo precisa estar na **MESMA WiFi** que você!
+
+---
+
+## ✅ O QUE SEU AMIGO VAI VER
+
+1. **Dashboard** com estatísticas
+2. **Criar Aeronave** - Novo avião
+3. **Criar Voo** - Com 18 campos (incluindo novos):
+   - Aeronave (primeiro)
+   - Piloto (primeiro)
+   - Data, Origem, Destino
+   - Distância, Custo Hora Voada, Tempo
+   - Combustível
+   - **Horário de Apresentação** (NOVO)
+   - **Horário de Corte de Motor** (NOVO)
+   - **Utilizado por** (NOVO)
+   - Número de Passageiro
+   - Responsável Financeiro
+   - Notas
+   - **Anexo para Upload** (NOVO)
+
+4. **Editar e Deletar Voos**
+5. **Criar Despesas** Fixas e Variáveis
+6. **Validações** automáticas
+
+---
+
+## 🎮 COMO COMEÇAR
+
+1. Seu amigo abre navegador
+2. Digita: `http://192.168.0.240:3000`
+3. Faz login
+4. Testa as funcionalidades
+5. Manda feedback!
+
+---
+
+## 🌐 SE FORA DA REDE
+
+Use NGROK:
+```bash
+ngrok http 3000
+# Compartilhe o link gerado
+```
+
+Ou Vercel:
+- GitHub: https://github.com/zepedrascarneiro/air-x-control
+- Deploy em https://vercel.com
+
+---
+
+**Air X está 100% pronto! 🚀**
