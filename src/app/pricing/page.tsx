@@ -132,7 +132,7 @@ export default function PricingPage() {
                 <h4 className="text-lg font-semibold text-white">Quer outro formato?</h4>
                 <p className="mt-2">
                   Criamos configurações especiais para operações com mais de duas aeronaves ou com
-                  divisão de cotas diferenciada. Nossa equipe auxilia na implantação financeira e
+                  divisão de gestão diferenciada. Nossa equipe auxilia na implantação financeira e
                   jurídica.
                 </p>
                 <a

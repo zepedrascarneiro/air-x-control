@@ -82,10 +82,10 @@ export default async function Home() {
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-6 text-5xl font-bold text-white md:text-6xl">
             Gestão Inteligente de
-            <span className="block text-air-gold-400">Cotas de Aeronaves</span>
+            <span className="block text-air-gold-400">Aeronaves</span>
           </h2>
           <p className="mb-8 text-xl leading-relaxed text-air-blue-100">
-            Controle completo das suas cotas compartilhadas com dashboards intuitivos,
+            Controle completo do compartilhamento de aeronaves com dashboards intuitivos,
             agenda integrada e gestão financeira avançada. Plano base inclui até duas aeronaves por
             {" "}
             <span className="font-semibold text-air-gold-200">R$ 397/mês</span>
@@ -189,7 +189,7 @@ export default async function Home() {
               <ul className="mt-6 space-y-3 text-air-blue-100">
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-air-gold-400">◆</span>
-                  <span>Visão completa das suas cotas, horas de voo e saldo de utilização.</span>
+                  <span>Visão completa da gestão de aeronaves, horas de voo e saldo de utilização.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-1 text-air-gold-400">◆</span>
@@ -209,7 +209,7 @@ export default async function Home() {
       </section>
 
       <footer className="container mx-auto px-4 py-12 text-center text-air-blue-100">
-        <p>&copy; 2025 Air X - Sistema de Gestão de Cotas de Aeronaves</p>
+        <p>&copy; 2025 Air X - Sistema de Gestão de Aeronaves</p>
         <p className="mt-2">Desenvolvido com tecnologia de ponta para aviação moderna</p>
       </footer>
     </main>

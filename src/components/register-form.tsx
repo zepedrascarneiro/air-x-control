@@ -12,6 +12,8 @@ const ROLE_OPTIONS = [
   { value: "VIEWER", label: "Proprietário / Passageiro" },
   { value: "CONTROLLER", label: "Administrador / Comandante" },
   { value: "ADMIN", label: "Administrador / Comandante" },
+  { value: "PILOT", label: "Copiloto" },
+  { value: "CTM", label: "CTM" },
 ];
 
 export function RegisterForm() {

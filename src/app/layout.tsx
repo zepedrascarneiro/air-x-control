@@ -4,7 +4,7 @@ import { ToastProvider } from "@/components/ui/toast-provider";
 
 export const metadata: Metadata = {
   title: "Air X",
-  description: "Gestão inteligente de cotas de aeronaves Air X",
+  description: "Gestão inteligente de aeronaves Air X",
 };
 
 export default function RootLayout({

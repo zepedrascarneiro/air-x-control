@@ -48,6 +48,8 @@ const ROLE_LABELS = {
   ADMIN: "Administrador / Comandante",
   CONTROLLER: "Administrador / Comandante",
   VIEWER: "Proprietário / Passageiro",
+  PILOT: "Copiloto",
+  CTM: "CTM",
 } as const;
 
 const PERIOD_DEFAULT: PeriodKey = "current-month";

@@ -58,24 +58,22 @@ export const flightSchema = z.object({
   flightDate: z.string().min(1, "Informe a data do voo"),
   origin: z.string().min(2, "Origem obrigatória"),
   destination: z.string().min(2, "Destino obrigatório"),
-  planSequence: optionalInt,
-  legSequence: optionalInt,
-  categoryCode: optionalInt,
   distanceNm: optionalNumber,
   fuelStart: optionalNumber,
   fuelEnd: optionalNumber,
   durationHours: optionalNumber,
-  baseAbsorption: optionalNumber,
-  baseFixedAbsorption: optionalNumber,
+  baseAbsorption: optionalString.pipe(z.string().optional()),
+  baseFixedAbsorption: optionalString.pipe(z.string().optional()),
   baseTax: optionalNumber,
-  baseFixedTax: optionalNumber,
   travelExpenses: optionalNumber,
   maintenanceExpenses: optionalNumber,
   totalCost: optionalNumber,
   notes: z.string().max(500).optional(),
+  attachment: z.string().optional(),
   pilotId: z.string().optional(),
   payerId: z.string().optional(),
   aircraftId: z.string().optional(),
+  usedById: z.string().optional(),
 });
 
 export type FlightInput = z.infer<typeof flightSchema>;
@@ -95,6 +93,7 @@ export const expenseSchema = z.object({
   notes: z.string().max(500).optional(),
   paidById: z.string().optional(),
   flightId: z.string().optional(),
+  receipt: z.string().optional(),
 });
 
 export type ExpenseInput = z.infer<typeof expenseSchema>;
@@ -146,7 +145,7 @@ export const registerSchema = z
         .regex(/^[+()\d\s-]{8,}$/, "Informe um telefone válido")
         .optional(),
     ),
-    role: z.enum(["ADMIN", "CONTROLLER", "VIEWER"]).optional(),
+    role: z.enum(["ADMIN", "CONTROLLER", "VIEWER", "PILOT", "CTM"]).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],

@@ -16,7 +16,7 @@ Mapa dinâmico do projeto, atualizado em Markdown, para leitura rápida e colabo
 
 ## Overview {#overview}
 
-Aplicação Next.js 14 para gestão de cotas de aeronaves, com foco em:
+Aplicação Next.js 14 para gestão de aeronaves, com foco em:
 
 - Inteligência operacional (dashboards, próximos voos, histórico)
 - Lançamento e controle de despesas/voos

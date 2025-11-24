@@ -18,10 +18,11 @@ model User {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
-  flightsAsPilot Flight[]   @relation("FlightPilot")
-  flightsAsPayer Flight[]   @relation("FlightPayer")
-  expenses       Expense[]
-  sessions       Session[]
+  flightsAsPilot  Flight[]   @relation("FlightPilot")
+  flightsAsPayer  Flight[]   @relation("FlightPayer")
+  flightsAsUsedBy Flight[]   @relation("FlightUsedBy")
+  expenses        Expense[]
+  sessions        Session[]
 }
 
 model Aircraft {
@@ -44,30 +45,29 @@ model Flight {
   flightDate          DateTime
   origin              String
   destination         String
-  planSequence        Int?
-  legSequence         Int?
-  categoryCode        Int?
   distanceNm          Decimal?
   fuelStart           Decimal?
   fuelEnd             Decimal?
   durationHours       Decimal?
-  baseAbsorption      Decimal?  @default(0)
-  baseFixedAbsorption Decimal?  @default(0)
-  baseTax             Decimal?  @default(0)
-  baseFixedTax        Decimal?  @default(0)
+  baseAbsorption      String?
+  baseFixedAbsorption String?
+  baseTax             Decimal?
   travelExpenses      Decimal?  @default(0)
   maintenanceExpenses Decimal?  @default(0)
   totalCost           Decimal?  @default(0)
   notes               String?
+  attachment          String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
   pilotId    String?
   payerId    String?
   aircraftId String?
+  usedById   String?
 
   pilot    User?     @relation("FlightPilot", fields: [pilotId], references: [id])
   payer    User?     @relation("FlightPayer", fields: [payerId], references: [id])
+  usedBy   User?     @relation("FlightUsedBy", fields: [usedById], references: [id])
   aircraft Aircraft? @relation(fields: [aircraftId], references: [id])
 
   expenses Expense[]

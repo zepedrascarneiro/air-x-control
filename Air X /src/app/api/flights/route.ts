@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { getManagerUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { flightSchema } from "@/lib/validators";
-
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   const flights = await prisma.flight.findMany({
@@ -24,11 +21,6 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const user = await getManagerUser();
-    if (!user) {
-      return NextResponse.json({ message: "Acesso restrito" }, { status: 403 });
-    }
-
     const json = await request.json();
     const data = flightSchema.parse(json);
 
@@ -37,35 +29,39 @@ export async function POST(request: Request) {
         flightDate: new Date(data.flightDate),
         origin: data.origin,
         destination: data.destination,
+        planSequence: data.planSequence,
+        legSequence: data.legSequence,
+        categoryCode: data.categoryCode,
         distanceNm: data.distanceNm,
-        fuelStart: data.fuelStart,
-        fuelEnd: data.fuelEnd,
+        hobbsStart: data.hobbsStart,
+        hobbsEnd: data.hobbsEnd,
         durationHours: data.durationHours,
         baseAbsorption: data.baseAbsorption,
         baseFixedAbsorption: data.baseFixedAbsorption,
         baseTax: data.baseTax,
+        baseFixedTax: data.baseFixedTax,
         travelExpenses: data.travelExpenses,
         maintenanceExpenses: data.maintenanceExpenses,
         totalCost: data.totalCost,
         notes: data.notes,
-        attachment: data.attachment,
         pilotId: data.pilotId,
         payerId: data.payerId,
         aircraftId: data.aircraftId,
-        usedById: data.usedById,
       },
       include: {
         pilot: true,
         payer: true,
         aircraft: true,
-        usedBy: true,
       },
     });
 
     return NextResponse.json(flight, { status: 201 });
   } catch (error) {
     if (error instanceof Error) {
-      return NextResponse.json({ message: error.message }, { status: 400 });
+      return NextResponse.json(
+        { message: error.message },
+        { status: 400 },
+      );
     }
 
     return NextResponse.json(

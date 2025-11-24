@@ -2,11 +2,8 @@
 CREATE TABLE "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "hashedPassword" TEXT NOT NULL,
+    "email" TEXT,
     "role" TEXT NOT NULL DEFAULT 'VIEWER',
-    "status" TEXT NOT NULL DEFAULT 'ACTIVE',
-    "phone" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
@@ -71,38 +68,8 @@ CREATE TABLE "Expense" (
     CONSTRAINT "Expense_flightId_fkey" FOREIGN KEY ("flightId") REFERENCES "Flight" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
--- CreateTable
-CREATE TABLE "DemoRequest" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "phone" TEXT,
-    "company" TEXT,
-    "preferredDate" DATETIME,
-    "message" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'PENDING',
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "Session" (
-    "id" TEXT NOT NULL PRIMARY KEY,
-    "token" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "ip" TEXT,
-    "userAgent" TEXT,
-    "expiresAt" DATETIME NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Aircraft_tailNumber_key" ON "Aircraft"("tailNumber");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Session_token_key" ON "Session"("token");

@@ -1,4 +1,4 @@
-# Air X — Gestão de Cotas de Aeronaves
+# Air X — Gestão de Aeronaves
 
 Bem-vindo ao projeto Air X. Este repositório contém um app Next.js focado em dashboards operacionais, agenda de voos e gestão financeira para coproprietários de aeronaves.
 

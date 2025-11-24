@@ -46,9 +46,6 @@ type FlightItem = {
   flightDate: string;
   origin: string;
   destination: string;
-  planSequence?: number | null;
-  legSequence?: number | null;
-  categoryCode?: number | null;
   distanceNm?: number | string | null;
   fuelStart?: number | string | null;
   fuelEnd?: number | string | null;
@@ -61,12 +58,15 @@ type FlightItem = {
   maintenanceExpenses?: number | string | null;
   totalCost?: number | string | null;
   notes?: string | null;
+  attachment?: string | null;
   pilotId?: string | null;
   payerId?: string | null;
   aircraftId?: string | null;
+  usedById?: string | null;
   pilot?: { id: string; name: string | null } | null;
   payer?: { id: string; name: string | null } | null;
   aircraft?: { id: string; tailNumber: string; model: string | null } | null;
+  usedBy?: { id: string; name: string | null } | null;
 };
 
 type ExpenseItem = {
@@ -77,6 +77,7 @@ type ExpenseItem = {
   notes?: string | null;
   paidById?: string | null;
   flightId?: string | null;
+  receipt?: string | null;
   paidBy?: { id: string; name: string | null } | null;
   flight?: { id: string; origin: string; destination: string; flightDate: string } | null;
 };
@@ -190,7 +191,7 @@ function formatDate(value: string) {
 }
 
 export function EditorPanel({ canManage }: EditorPanelProps) {
-  const [activeTab, setActiveTab] = useState<"aircraft" | "flights" | "expenses">(
+  const [activeTab, setActiveTab] = useState<"aircraft" | "flights" | "expenses" | "fixed-expenses" | "variable-expenses">(
     canManage ? "aircraft" : "flights",
   );
 
@@ -281,7 +282,7 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
           <h2 className="text-2xl font-semibold">Central do Administrador / Comandante</h2>
           <p className="text-sm text-air-blue-100">
             {canManage
-              ? "Cadastre aeronaves, atualize voos e acompanhe despesas com poucos cliques."
+              ? "Cadastre aeronaves, atualize voos e acompanhe despesas fixas e variáveis com poucos cliques."
               : "Visualize voos, despesas e dados de frota em modo leitura."}
           </p>
         </div>
@@ -312,15 +313,27 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("expenses")}
+            onClick={() => setActiveTab("fixed-expenses")}
             className={cn(
               "rounded-full px-4 py-2 transition",
-              activeTab === "expenses"
+              activeTab === "fixed-expenses"
                 ? "bg-white text-air-blue-900"
                 : "text-air-blue-100 hover:bg-white/10",
             )}
           >
-            Despesas
+            Despesas Fixas
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("variable-expenses")}
+            className={cn(
+              "rounded-full px-4 py-2 transition",
+              activeTab === "variable-expenses"
+                ? "bg-white text-air-blue-900"
+                : "text-air-blue-100 hover:bg-white/10",
+            )}
+          >
+            Despesas Variáveis
           </button>
         </div>
       </div>
@@ -353,9 +366,9 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
           />
         ) : null}
 
-        {activeTab === "expenses" ? (
+        {activeTab === "fixed-expenses" ? (
           <ExpenseManager
-            expenses={expenseState.data}
+            expenses={expenseState.data.filter(exp => exp.category === "FIXA" || exp.category?.toLowerCase().includes("fixa"))}
             flights={flightState.data}
             metadata={metadataState.data}
             loading={expenseState.loading || metadataState.loading}
@@ -363,6 +376,21 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
               await Promise.all([fetchExpenses(), fetchFlights(), fetchMetadata()]);
             }}
             canManage={canManage}
+            expenseType="fixed"
+          />
+        ) : null}
+
+        {activeTab === "variable-expenses" ? (
+          <ExpenseManager
+            expenses={expenseState.data.filter(exp => exp.category !== "FIXA" && !exp.category?.toLowerCase().includes("fixa"))}
+            flights={flightState.data}
+            metadata={metadataState.data}
+            loading={expenseState.loading || metadataState.loading}
+            onRefresh={async () => {
+              await Promise.all([fetchExpenses(), fetchFlights(), fetchMetadata()]);
+            }}
+            canManage={canManage}
+            expenseType="variable"
           />
         ) : null}
       </div>
@@ -728,24 +756,22 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
       flightDate: toDateTimeLocalInput(new Date()),
       origin: "",
       destination: "",
-      planSequence: undefined,
-      legSequence: undefined,
-      categoryCode: undefined,
-  distanceNm: undefined,
-  fuelStart: undefined,
-  fuelEnd: undefined,
+      distanceNm: undefined,
+      fuelStart: undefined,
+      fuelEnd: undefined,
       durationHours: undefined,
       baseAbsorption: undefined,
       baseFixedAbsorption: undefined,
       baseTax: undefined,
-      baseFixedTax: undefined,
       travelExpenses: undefined,
       maintenanceExpenses: undefined,
       totalCost: undefined,
       notes: undefined,
+      attachment: undefined,
       pilotId: undefined,
       payerId: undefined,
       aircraftId: undefined,
+      usedById: undefined,
     }),
     [],
   );
@@ -767,24 +793,22 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
         flightDate: toDateTimeLocalInput(editingFlight.flightDate) || toDateTimeLocalInput(new Date()),
         origin: editingFlight.origin ?? "",
         destination: editingFlight.destination ?? "",
-        planSequence: parseNumeric(editingFlight.planSequence),
-        legSequence: parseNumeric(editingFlight.legSequence),
-        categoryCode: parseNumeric(editingFlight.categoryCode),
         distanceNm: parseNumeric(editingFlight.distanceNm),
-  fuelStart: parseNumeric(editingFlight.fuelStart),
-  fuelEnd: parseNumeric(editingFlight.fuelEnd),
+        fuelStart: parseNumeric(editingFlight.fuelStart),
+        fuelEnd: parseNumeric(editingFlight.fuelEnd),
         durationHours: parseNumeric(editingFlight.durationHours),
-        baseAbsorption: parseNumeric(editingFlight.baseAbsorption),
-        baseFixedAbsorption: parseNumeric(editingFlight.baseFixedAbsorption),
+        baseAbsorption: typeof editingFlight.baseAbsorption === "string" ? editingFlight.baseAbsorption : undefined,
+        baseFixedAbsorption: typeof editingFlight.baseFixedAbsorption === "string" ? editingFlight.baseFixedAbsorption : undefined,
         baseTax: parseNumeric(editingFlight.baseTax),
-        baseFixedTax: parseNumeric(editingFlight.baseFixedTax),
         travelExpenses: parseNumeric(editingFlight.travelExpenses),
         maintenanceExpenses: parseNumeric(editingFlight.maintenanceExpenses),
         totalCost: parseNumeric(editingFlight.totalCost),
         notes: editingFlight.notes ?? undefined,
+        attachment: editingFlight.attachment ?? undefined,
         pilotId: editingFlight.pilotId ?? undefined,
         payerId: editingFlight.payerId ?? undefined,
         aircraftId: editingFlight.aircraftId ?? undefined,
+        usedById: editingFlight.usedById ?? undefined,
       });
       if (canManage) {
         setIsFormOpen(true);
@@ -1046,6 +1070,45 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
 
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div>
+              <label className="text-sm font-medium text-air-blue-100" htmlFor="aircraftId">
+                Aeronave
+              </label>
+              <select
+                id="aircraftId"
+                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                {...register("aircraftId", {
+                  setValueAs: optionalStringValue,
+                })}
+              >
+                <option value="">Selecionar</option>
+                {metadata.aircraft.map((item) => (
+                  <option key={item.id} value={item.id} className="text-air-blue-900">
+                    {item.tailNumber} · {item.model ?? ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-air-blue-100" htmlFor="pilotId">
+                Piloto
+              </label>
+              <select
+                id="pilotId"
+                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                {...register("pilotId", {
+                  setValueAs: optionalStringValue,
+                })}
+              >
+                <option value="">Selecionar</option>
+                {metadata.users.map((user) => (
+                  <option key={user.id} value={user.id} className="text-air-blue-900">
+                    {user.name} ({user.role})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
               <label className="text-sm font-medium text-air-blue-100" htmlFor="flightDate">
                 Data e horário
               </label>
@@ -1092,34 +1155,8 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
 
             <div className="grid grid-cols-3 gap-4 md:col-span-2">
               {([
-                ["planSequence", "Plano"],
-                ["legSequence", "Perna"],
-                ["categoryCode", "Categoria"],
-              ] as const).map(([field, label]) => (
-                <div key={field}>
-                  <label className="text-sm font-medium text-air-blue-100" htmlFor={field}>
-                    {label}
-                  </label>
-                  <input
-                    id={field}
-                    type="number"
-                    className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
-                    {...register(field, {
-                      setValueAs: optionalNumberValue,
-                    })}
-                  />
-                  {errors[field] ? (
-                    <p className="mt-1 text-xs text-red-200">{errors[field]?.message}</p>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 md:col-span-2">
-              {([
                 ["distanceNm", "Distância (NM)"],
-                ["durationHours", "Duração (h)"],
-                ["totalCost", "Custo total"],
+                ["totalCost", "Custo hora voada"],
               ] as const).map(([field, label]) => (
                 <div key={field}>
                   <label className="text-sm font-medium text-air-blue-100" htmlFor={field}>
@@ -1139,6 +1176,50 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                   ) : null}
                 </div>
               ))}
+              
+              <div>
+                <label className="text-sm font-medium text-air-blue-100" htmlFor="durationHours">
+                  Tempo Total Operacional (h)
+                </label>
+                <div className="mt-2 space-y-2">
+                  <input
+                    id="durationHours"
+                    type="number"
+                    step="0.01"
+                    className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                    {...register("durationHours", {
+                      setValueAs: optionalNumberValue,
+                    })}
+                    placeholder="Ex: 2.5"
+                  />
+                  <div className="rounded-md bg-air-blue-900/30 p-2">
+                    <p className="text-xs text-air-blue-200 mb-1">Conversor Minutos → Decimais:</p>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="number"
+                        placeholder="minutos"
+                        min="0"
+                        className="flex-1 rounded border border-white/10 bg-white/5 px-2 py-1 text-sm text-white placeholder:text-air-blue-300 focus:border-air-gold-300 focus:outline-none"
+                        onChange={(e) => {
+                          const minutes = parseFloat(e.target.value);
+                          if (!isNaN(minutes) && minutes >= 0) {
+                            const hours = minutes / 60;
+                            const durationInput = document.getElementById("durationHours") as HTMLInputElement;
+                            if (durationInput) {
+                              durationInput.value = hours.toFixed(2);
+                              durationInput.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                          }
+                        }}
+                      />
+                      <span className="text-xs text-air-blue-200 whitespace-nowrap">= decimais</span>
+                    </div>
+                  </div>
+                </div>
+                {errors.durationHours ? (
+                  <p className="mt-1 text-xs text-red-200">{errors.durationHours.message}</p>
+                ) : null}
+              </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4 md:col-span-2">
@@ -1168,75 +1249,96 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
             </div>
 
             <div className="grid grid-cols-3 gap-4 md:col-span-2">
-              {([
-                ["baseAbsorption", "Absorção base"],
-                ["baseFixedAbsorption", "Absorção fixa"],
-                ["maintenanceExpenses", "Despesas manutenção"],
-              ] as const).map(([field, label]) => (
-                <div key={field}>
-                  <label className="text-sm font-medium text-air-blue-100" htmlFor={field}>
-                    {label}
-                  </label>
-                  <input
-                    id={field}
-                    type="number"
-                    step="0.01"
-                    className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
-                    {...register(field, {
-                      setValueAs: optionalNumberValue,
-                    })}
-                  />
-                  {errors[field] ? (
-                    <p className="mt-1 text-xs text-red-200">{errors[field]?.message}</p>
-                  ) : null}
-                </div>
-              ))}
+              <div>
+                <label className="text-sm font-medium text-air-blue-100" htmlFor="baseAbsorption">
+                  Horário de Apresentação
+                </label>
+                <input
+                  id="baseAbsorption"
+                  type="time"
+                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                  {...register("baseAbsorption", {
+                    setValueAs: optionalStringValue,
+                  })}
+                />
+                {errors.baseAbsorption ? (
+                  <p className="mt-1 text-xs text-red-200">{errors.baseAbsorption?.message}</p>
+                ) : null}
+              </div>
+              <div>
+                <label className="text-sm font-medium text-air-blue-100" htmlFor="baseFixedAbsorption">
+                  Horário de Corte de Motor
+                </label>
+                <input
+                  id="baseFixedAbsorption"
+                  type="time"
+                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                  {...register("baseFixedAbsorption", {
+                    setValueAs: optionalStringValue,
+                  })}
+                />
+                {errors.baseFixedAbsorption ? (
+                  <p className="mt-1 text-xs text-red-200">{errors.baseFixedAbsorption?.message}</p>
+                ) : null}
+              </div>
+              <div>
+                <label className="text-sm font-medium text-air-blue-100" htmlFor="maintenanceExpenses">
+                  Despesas manutenção
+                </label>
+                <input
+                  id="maintenanceExpenses"
+                  type="number"
+                  step="0.01"
+                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                  {...register("maintenanceExpenses", {
+                    setValueAs: optionalNumberValue,
+                  })}
+                />
+                {errors.maintenanceExpenses ? (
+                  <p className="mt-1 text-xs text-red-200">{errors.maintenanceExpenses?.message}</p>
+                ) : null}
+              </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4 md:col-span-2">
-              {([
-                ["baseTax", "Taxa base"],
-                ["baseFixedTax", "Taxa base fixa"],
-              ] as const).map(([field, label]) => (
-                <div key={field}>
-                  <label className="text-sm font-medium text-air-blue-100" htmlFor={field}>
-                    {label}
-                  </label>
-                  <input
-                    id={field}
-                    type="number"
-                    step="0.01"
-                    className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
-                    {...register(field, {
-                      setValueAs: optionalNumberValue,
-                    })}
-                  />
-                  {errors[field] ? (
-                    <p className="mt-1 text-xs text-red-200">{errors[field]?.message}</p>
-                  ) : null}
-                </div>
-              ))}
+              <div>
+                <label className="text-sm font-medium text-air-blue-100" htmlFor="usedById">
+                  Utilizado por
+                </label>
+                <select
+                  id="usedById"
+                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                  {...register("usedById", {
+                    setValueAs: optionalStringValue,
+                  })}
+                >
+                  <option value="">Selecionar</option>
+                  {metadata.users.map((user) => (
+                    <option key={user.id} value={user.id} className="text-air-blue-900">
+                      {user.name} ({user.role})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-air-blue-100" htmlFor="baseTax">
+                  Número de Passageiro
+                </label>
+                <input
+                  id="baseTax"
+                  type="number"
+                  min="0"
+                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                  {...register("baseTax", {
+                    setValueAs: optionalNumberValue,
+                  })}
+                />
+                {errors.baseTax ? (
+                  <p className="mt-1 text-xs text-red-200">{errors.baseTax?.message}</p>
+                ) : null}
+              </div>
             </div>
 
-            <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="pilotId">
-                Piloto
-              </label>
-              <select
-                id="pilotId"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
-                {...register("pilotId", {
-                  setValueAs: optionalStringValue,
-                })}
-              >
-                <option value="">Selecionar</option>
-                {metadata.users.map((user) => (
-                  <option key={user.id} value={user.id} className="text-air-blue-900">
-                    {user.name} ({user.role})
-                  </option>
-                ))}
-              </select>
-            </div>
             <div>
               <label className="text-sm font-medium text-air-blue-100" htmlFor="payerId">
                 Responsável financeiro
@@ -1256,25 +1358,6 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                 ))}
               </select>
             </div>
-            <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="aircraftId">
-                Aeronave
-              </label>
-              <select
-                id="aircraftId"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
-                {...register("aircraftId", {
-                  setValueAs: optionalStringValue,
-                })}
-              >
-                <option value="">Selecionar</option>
-                {metadata.aircraft.map((item) => (
-                  <option key={item.id} value={item.id} className="text-air-blue-900">
-                    {item.tailNumber} · {item.model ?? ""}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div className="md:col-span-2">
               <label className="text-sm font-medium text-air-blue-100" htmlFor="notes">
@@ -1289,6 +1372,41 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                   setValueAs: optionalStringValue,
                 })}
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="text-sm font-medium text-air-blue-100" htmlFor="attachment">
+                Anexo (arquivo)
+              </label>
+              <div className="mt-2 space-y-2">
+                <input
+                  id="attachment"
+                  type="file"
+                  className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white file:mr-4 file:rounded file:border-0 file:bg-air-gold-400 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-air-blue-900 hover:file:bg-air-gold-300"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt,.zip"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        const base64 = event.target?.result as string;
+                        // Armazenar como base64 no campo
+                        const fileData = `${file.name}|${base64}`;
+                        (document.getElementById("attachment-hidden") as HTMLInputElement).value = fileData;
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                <input
+                  id="attachment-hidden"
+                  type="hidden"
+                  {...register("attachment", {
+                    setValueAs: optionalStringValue,
+                  })}
+                />
+                <p className="text-xs text-air-blue-300">Formatos aceitos: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, TXT, ZIP</p>
+              </div>
             </div>
           </div>
 
@@ -1308,9 +1426,10 @@ type ExpenseManagerProps = {
   loading: boolean;
   onRefresh: () => Promise<void>;
   canManage: boolean;
+  expenseType?: "fixed" | "variable";
 };
 
-function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canManage }: ExpenseManagerProps) {
+function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canManage, expenseType }: ExpenseManagerProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<ExpenseItem | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -1480,7 +1599,9 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h3 className="text-xl font-semibold">Despesas recentes</h3>
+          <h3 className="text-xl font-semibold">
+            {expenseType === "fixed" ? "Despesas Fixas" : expenseType === "variable" ? "Despesas Variáveis" : "Despesas recentes"}
+          </h3>
           <p className="text-sm text-air-blue-200">
             {canManage
               ? "Centralize os lançamentos financeiros e edite quando necessário."
@@ -1551,10 +1672,17 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
           ) : (
             filteredExpenses.slice(0, 10).map((expense) => (
               <div key={expense.id} className="flex flex-col gap-2 p-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-sm uppercase tracking-wide text-air-blue-200">
-                    {formatDate(expense.expenseDate)}
-                  </p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm uppercase tracking-wide text-air-blue-200">
+                      {formatDate(expense.expenseDate)}
+                    </p>
+                    {expense.receipt ? (
+                      <span className="inline-flex items-center rounded-full bg-air-gold-400/20 px-2 py-1 text-xs font-semibold text-air-gold-200">
+                        📎 Comprovante
+                      </span>
+                    ) : null}
+                  </div>
                   <p className="text-base font-semibold">{expense.category}</p>
                   <p className="text-xs text-air-blue-200">
                     Responsável: {expense.paidBy?.name ?? "—"}
@@ -1710,6 +1838,24 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
                   setValueAs: optionalStringValue,
                 })}
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="text-sm font-medium text-air-blue-100" htmlFor="receipt">
+                Comprovante
+              </label>
+              <input
+                id="receipt"
+                type="file"
+                accept="image/*,.pdf"
+                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                {...register("receipt", {
+                  setValueAs: optionalStringValue,
+                })}
+              />
+              <p className="mt-1 text-xs text-air-blue-200">
+                Aceita: imagens (PNG, JPG, JPEG) e PDF
+              </p>
             </div>
           </div>
 
