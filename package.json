@@ -9,6 +9,7 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
+    "seed": "tsx prisma/seed.ts",
     "seed:editor": "node scripts/create-test-user.mjs",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed --trace on",
@@ -33,6 +34,7 @@
     "react-hook-form": "^7.51.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss": "^3.4.3",
+    "tsx": "^4.20.6",
     "typescript": "^5.4.5",
     "xlsx": "^0.18.5",
     "zod": "^3.22.4"
@@ -41,6 +43,7 @@
     "@playwright/test": "^1.56.1",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.5"
+    "eslint-config-next": "^14.2.5",
+    "md-to-pdf": "^5.2.5"
   }
 }

@@ -10,6 +10,9 @@ rm -rf ./prisma/dev.db ./prisma/dev.db-journal 2>/dev/null || true
 echo "🗄️ Criando banco com schema atualizado..."
 npx prisma db push --force-reset --accept-data-loss
 
+echo "🌱 Executando seed de dados iniciais..."
+npx tsx prisma/seed.ts || echo "Seed falhou, continuando..."
+
 echo "📦 Building Next.js..."
 npm run build
 
