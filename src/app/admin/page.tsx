@@ -169,10 +169,10 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-900">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-center">
-          <RefreshCw className="mx-auto h-8 w-8 animate-spin text-amber-400" />
-          <p className="mt-4 text-gray-400">Carregando painel administrativo...</p>
+          <RefreshCw className="mx-auto h-8 w-8 animate-spin text-blue-600" />
+          <p className="mt-4 text-slate-500">Carregando painel administrativo...</p>
         </div>
       </div>
     );
@@ -180,14 +180,14 @@ export default function AdminPage() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-900">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="text-center">
           <XCircle className="mx-auto h-12 w-12 text-red-500" />
-          <h1 className="mt-4 text-xl font-semibold text-white">Acesso Negado</h1>
-          <p className="mt-2 text-gray-400">{error}</p>
+          <h1 className="mt-4 text-xl font-semibold text-slate-900">Acesso Negado</h1>
+          <p className="mt-2 text-slate-500">{error}</p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="mt-6 rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-amber-400"
+            className="mt-6 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           >
             Voltar ao Dashboard
           </button>
@@ -197,31 +197,32 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/80 backdrop-blur">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-4">
-            <div className="relative h-10 w-10">
-              <Image src="/airx-logo.svg" alt="Air X Control" fill sizes="2.5rem" />
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+              <Shield className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Painel Administrativo</h1>
-              <p className="text-sm text-gray-400">
+              <h1 className="text-xl font-bold text-slate-900">Painel Administrativo</h1>
+              <p className="text-sm text-slate-500">
                 Logado como {currentUser?.name} ({ROLE_LABELS[currentUser?.role || "VIEWER"]})
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => router.push("/dashboard")}
-              className="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700"
+              className="flex items-center gap-2 rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors"
             >
+              <Plane className="h-4 w-4" />
               Dashboard
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 rounded-lg bg-red-600/20 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-600/30"
+              className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors"
             >
               <LogOut className="h-4 w-4" />
               Sair
@@ -234,48 +235,58 @@ export default function AdminPage() {
         {/* Stats Cards */}
         {stats && (
           <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-5">
-            <div className="rounded-xl bg-gray-800 p-4">
+            <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-100">
               <div className="flex items-center gap-3">
-                <Users className="h-8 w-8 text-blue-400" />
+                <div className="p-3 rounded-xl bg-blue-50">
+                  <Users className="h-6 w-6 text-blue-600" />
+                </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats.totalUsers}</p>
-                  <p className="text-sm text-gray-400">Usuários</p>
+                  <p className="text-2xl font-bold text-slate-900">{stats.totalUsers}</p>
+                  <p className="text-sm text-slate-500">Usuários</p>
                 </div>
               </div>
             </div>
-            <div className="rounded-xl bg-gray-800 p-4">
+            <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-100">
               <div className="flex items-center gap-3">
-                <CheckCircle className="h-8 w-8 text-green-400" />
+                <div className="p-3 rounded-xl bg-green-50">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats.activeUsers}</p>
-                  <p className="text-sm text-gray-400">Ativos</p>
+                  <p className="text-2xl font-bold text-slate-900">{stats.activeUsers}</p>
+                  <p className="text-sm text-slate-500">Ativos</p>
                 </div>
               </div>
             </div>
-            <div className="rounded-xl bg-gray-800 p-4">
+            <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-100">
               <div className="flex items-center gap-3">
-                <Clock className="h-8 w-8 text-amber-400" />
+                <div className="p-3 rounded-xl bg-amber-50">
+                  <Clock className="h-6 w-6 text-amber-600" />
+                </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats.pendingDemos}</p>
-                  <p className="text-sm text-gray-400">Demos Pendentes</p>
+                  <p className="text-2xl font-bold text-slate-900">{stats.pendingDemos}</p>
+                  <p className="text-sm text-slate-500">Demos Pendentes</p>
                 </div>
               </div>
             </div>
-            <div className="rounded-xl bg-gray-800 p-4">
+            <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-100">
               <div className="flex items-center gap-3">
-                <Plane className="h-8 w-8 text-purple-400" />
+                <div className="p-3 rounded-xl bg-purple-50">
+                  <Plane className="h-6 w-6 text-purple-600" />
+                </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats.totalFlights}</p>
-                  <p className="text-sm text-gray-400">Voos</p>
+                  <p className="text-2xl font-bold text-slate-900">{stats.totalFlights}</p>
+                  <p className="text-sm text-slate-500">Voos</p>
                 </div>
               </div>
             </div>
-            <div className="rounded-xl bg-gray-800 p-4">
+            <div className="rounded-xl bg-white p-5 shadow-sm border border-slate-100">
               <div className="flex items-center gap-3">
-                <DollarSign className="h-8 w-8 text-emerald-400" />
+                <div className="p-3 rounded-xl bg-emerald-50">
+                  <DollarSign className="h-6 w-6 text-emerald-600" />
+                </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats.totalExpenses}</p>
-                  <p className="text-sm text-gray-400">Despesas</p>
+                  <p className="text-2xl font-bold text-slate-900">{stats.totalExpenses}</p>
+                  <p className="text-sm text-slate-500">Despesas</p>
                 </div>
               </div>
             </div>
@@ -283,13 +294,13 @@ export default function AdminPage() {
         )}
 
         {/* Tabs */}
-        <div className="mb-6 flex gap-2 border-b border-gray-800">
+        <div className="mb-6 flex gap-2 border-b border-slate-200">
           <button
             onClick={() => setActiveTab("users")}
             className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition ${
               activeTab === "users"
-                ? "border-amber-400 text-amber-400"
-                : "border-transparent text-gray-400 hover:text-white"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-500 hover:text-slate-900"
             }`}
           >
             <Users className="h-4 w-4" />
@@ -299,8 +310,8 @@ export default function AdminPage() {
             onClick={() => setActiveTab("demos")}
             className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition ${
               activeTab === "demos"
-                ? "border-amber-400 text-amber-400"
-                : "border-transparent text-gray-400 hover:text-white"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-500 hover:text-slate-900"
             }`}
           >
             <Calendar className="h-4 w-4" />
@@ -310,53 +321,53 @@ export default function AdminPage() {
 
         {/* Users Tab */}
         {activeTab === "users" && (
-          <div className="rounded-xl bg-gray-800 overflow-hidden">
+          <div className="rounded-xl bg-white shadow-sm border border-slate-100 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-700/50">
+                <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Usuário
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Contato
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Papel
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Atividade
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Cadastro
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-slate-100">
                   {users.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-700/30">
+                    <tr key={user.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-700 text-sm font-semibold text-amber-400">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white">
                             {user.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-medium text-white">{user.name}</p>
-                            <p className="text-sm text-gray-400">{user.email}</p>
+                            <p className="font-medium text-slate-900">{user.name}</p>
+                            <p className="text-sm text-slate-500">{user.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-sm text-gray-300">
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
                             <Mail className="h-3 w-3" />
                             {user.email}
                           </div>
                           {user.phone && (
-                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <div className="flex items-center gap-2 text-sm text-slate-500">
                               <Phone className="h-3 w-3" />
                               {user.phone}
                             </div>
@@ -368,7 +379,7 @@ export default function AdminPage() {
                           value={user.role}
                           onChange={(e) => updateUserRole(user.id, e.target.value)}
                           disabled={user.id === currentUser?.id}
-                          className="rounded-lg border border-gray-600 bg-gray-700 px-3 py-1.5 text-sm text-white focus:border-amber-400 focus:outline-none disabled:opacity-50"
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
                         >
                           {ROLE_OPTIONS.map((role) => (
                             <option key={role} value={role}>
@@ -382,12 +393,12 @@ export default function AdminPage() {
                           value={user.status}
                           onChange={(e) => updateUserStatus(user.id, e.target.value)}
                           disabled={user.id === currentUser?.id}
-                          className={`rounded-lg border px-3 py-1.5 text-sm focus:outline-none disabled:opacity-50 ${
+                          className={`rounded-lg border px-3 py-1.5 text-sm font-medium focus:outline-none disabled:opacity-50 ${
                             user.status === "ACTIVE"
-                              ? "border-green-600 bg-green-900/30 text-green-400"
+                              ? "border-green-200 bg-green-50 text-green-700"
                               : user.status === "INACTIVE"
-                              ? "border-red-600 bg-red-900/30 text-red-400"
-                              : "border-amber-600 bg-amber-900/30 text-amber-400"
+                              ? "border-red-200 bg-red-50 text-red-700"
+                              : "border-amber-200 bg-amber-50 text-amber-700"
                           }`}
                         >
                           {STATUS_OPTIONS.map((status) => (
@@ -399,24 +410,24 @@ export default function AdminPage() {
                       </td>
                       <td className="px-4 py-4">
                         <div className="space-y-1 text-sm">
-                          <div className="flex items-center gap-2 text-gray-300">
-                            <Plane className="h-3 w-3 text-purple-400" />
+                          <div className="flex items-center gap-2 text-slate-600">
+                            <Plane className="h-3 w-3 text-purple-500" />
                             {user._count?.flightsAsPilot || 0} voos
                           </div>
-                          <div className="flex items-center gap-2 text-gray-400">
-                            <DollarSign className="h-3 w-3 text-emerald-400" />
+                          <div className="flex items-center gap-2 text-slate-500">
+                            <DollarSign className="h-3 w-3 text-emerald-500" />
                             {user._count?.expenses || 0} despesas
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-400">
+                      <td className="px-4 py-4 text-sm text-slate-500">
                         {new Date(user.createdAt).toLocaleDateString("pt-BR")}
                       </td>
                     </tr>
                   ))}
                   {users.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                      <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
                         Nenhum usuário cadastrado
                       </td>
                     </tr>
@@ -429,44 +440,44 @@ export default function AdminPage() {
 
         {/* Demo Requests Tab */}
         {activeTab === "demos" && (
-          <div className="rounded-xl bg-gray-800 overflow-hidden">
+          <div className="rounded-xl bg-white shadow-sm border border-slate-100 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-700/50">
+                <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Solicitante
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Empresa
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Data Preferida
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Mensagem
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Status
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-gray-400">
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Enviado em
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-slate-100">
                   {demoRequests.map((demo) => (
-                    <tr key={demo.id} className="hover:bg-gray-700/30">
+                    <tr key={demo.id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-4 py-4">
                         <div>
-                          <p className="font-medium text-white">{demo.name}</p>
+                          <p className="font-medium text-slate-900">{demo.name}</p>
                           <div className="mt-1 space-y-0.5">
-                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <div className="flex items-center gap-2 text-sm text-slate-500">
                               <Mail className="h-3 w-3" />
                               {demo.email}
                             </div>
                             {demo.phone && (
-                              <div className="flex items-center gap-2 text-sm text-gray-400">
+                              <div className="flex items-center gap-2 text-sm text-slate-500">
                                 <Phone className="h-3 w-3" />
                                 {demo.phone}
                               </div>
@@ -476,38 +487,38 @@ export default function AdminPage() {
                       </td>
                       <td className="px-4 py-4">
                         {demo.company ? (
-                          <div className="flex items-center gap-2 text-sm text-gray-300">
-                            <Building className="h-4 w-4 text-gray-500" />
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Building className="h-4 w-4 text-slate-400" />
                             {demo.company}
                           </div>
                         ) : (
-                          <span className="text-gray-500">-</span>
+                          <span className="text-slate-400">-</span>
                         )}
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-300">
+                      <td className="px-4 py-4 text-sm text-slate-600">
                         {demo.preferredDate
                           ? new Date(demo.preferredDate).toLocaleDateString("pt-BR")
                           : "-"}
                       </td>
                       <td className="max-w-xs px-4 py-4">
                         {demo.message ? (
-                          <p className="truncate text-sm text-gray-400" title={demo.message}>
+                          <p className="truncate text-sm text-slate-500" title={demo.message}>
                             {demo.message}
                           </p>
                         ) : (
-                          <span className="text-gray-500">-</span>
+                          <span className="text-slate-400">-</span>
                         )}
                       </td>
                       <td className="px-4 py-4">
                         <select
                           value={demo.status}
                           onChange={(e) => updateDemoStatus(demo.id, e.target.value)}
-                          className={`rounded-lg border px-3 py-1.5 text-sm focus:outline-none ${
+                          className={`rounded-lg border px-3 py-1.5 text-sm font-medium focus:outline-none ${
                             demo.status === "PENDING"
-                              ? "border-amber-600 bg-amber-900/30 text-amber-400"
+                              ? "border-amber-200 bg-amber-50 text-amber-700"
                               : demo.status === "CONTACTED"
-                              ? "border-blue-600 bg-blue-900/30 text-blue-400"
-                              : "border-green-600 bg-green-900/30 text-green-400"
+                              ? "border-blue-200 bg-blue-50 text-blue-700"
+                              : "border-green-200 bg-green-50 text-green-700"
                           }`}
                         >
                           {DEMO_STATUS_OPTIONS.map((status) => (
@@ -517,14 +528,14 @@ export default function AdminPage() {
                           ))}
                         </select>
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-400">
+                      <td className="px-4 py-4 text-sm text-slate-500">
                         {new Date(demo.createdAt).toLocaleDateString("pt-BR")}
                       </td>
                     </tr>
                   ))}
                   {demoRequests.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                      <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
                         Nenhuma solicitação de demo
                       </td>
                     </tr>
@@ -539,13 +550,28 @@ export default function AdminPage() {
         <div className="mt-8 flex justify-center">
           <button
             onClick={loadData}
-            className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700"
+            className="flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
           >
             <RefreshCw className="h-4 w-4" />
             Atualizar Dados
           </button>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200 mt-12">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-blue-600" />
+              <span className="font-semibold text-slate-900">Air X Control - Admin</span>
+            </div>
+            <p className="text-sm text-slate-500">
+              © 2025 Air X Control. Painel Administrativo.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
