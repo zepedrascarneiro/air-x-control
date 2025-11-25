@@ -1,0 +1,95 @@
+# 📋 GUIA RÁPIDO - EXEMPLO PREENCHIDO
+
+## Exemplo de NEXTAUTH_SECRET
+
+Aqui está um secret gerado para você usar como exemplo:
+
+```
+UImd+wbO5N1JL8YdzkgoZqVQfVkHauIReRlxotob414=
+```
+
+⚠️ **IMPORTANTE:** Este é apenas um exemplo! Para produção, SEMPRE gere o seu próprio:
+```bash
+openssl rand -base64 32
+```
+
+---
+
+## 🔐 GitHub Secrets - Exemplo
+
+Adicione em: https://github.com/zepedrascarneiro/air-x-control/settings/secrets/actions
+
+```
+Secret 1:
+  Name: DO_API_TOKEN
+  Value: dop_v1_1a2b3c4d5e6f7g8h9i0j1k2l3m4n... (seu token DigitalOcean)
+
+Secret 2:
+  Name: DO_APP_ID
+  Value: app-xxxxxxxxxxxxx (veja na URL do DigitalOcean)
+```
+
+---
+
+## 🌐 DigitalOcean Environment Variables - Exemplo
+
+Acesse: https://cloud.digitalocean.com/apps → Sua app → Settings → Environment Variables
+
+```
+NODE_ENV: production
+DATABASE_URL: file:./prisma/dev.db
+ALLOW_SELF_SIGNUP: false
+NEXTAUTH_SECRET: UImd+wbO5N1JL8YdzkgoZqVQfVkHauIReRlxotob414=
+NEXTAUTH_URL: [deixar em branco - sistema preenche]
+```
+
+---
+
+## 🎯 Sequência de Ações
+
+```
+1. Terminal → openssl rand -base64 32
+   ↓ Copiar o resultado
+   
+2. GitHub → Adicionar 2 secrets
+   ↓ DO_API_TOKEN
+   ↓ DO_APP_ID
+   
+3. DigitalOcean → Configurar 5 variáveis
+   ↓ Incluindo o NEXTAUTH_SECRET que gerou
+   
+4. Clicar "Save"
+   ↓ Deploy começa automaticamente
+   
+5. GitHub Actions → Acompanhar em tempo real
+   ↓ Esperar ficar verde ✅
+   
+6. DigitalOcean → App fica online
+   ↓ Copiar URL da app
+   
+7. Abrir URL no navegador
+   ↓ Testar login e funcionalidades
+```
+
+---
+
+## 🧪 Credenciais de Teste
+
+Após o deploy, acesse sua app com:
+
+```
+Email: editor@airx.dev
+Senha: [a que você configurou ao criar o usuário]
+
+Ou: Clique em "Sign Up" para criar novo usuário
+```
+
+---
+
+## 📞 Dúvidas?
+
+- ❓ Onde está meu DO_API_TOKEN? → https://cloud.digitalocean.com/account/api/tokens
+- ❓ Onde está meu DO_APP_ID? → https://cloud.digitalocean.com/apps (na URL)
+- ❓ Onde vejo os logs? → https://github.com/zepedrascarneiro/air-x-control/actions
+- ❓ Meu deploy falhou? → Veja em GitHub Actions o erro
+- ❓ Preciso fazer novo deploy? → Faça `git push` para `main` e automático inicia

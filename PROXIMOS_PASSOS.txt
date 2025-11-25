@@ -1,0 +1,133 @@
+# 🎯 RESUMO DO DEPLOY - PRÓXIMOS PASSOS
+
+## STATUS ATUAL: ✅ 80% PRONTO
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ✅ Backend compilado e testado                            │
+│  ✅ Banco de dados configurado                             │
+│  ✅ GitHub Actions workflow pronto                         │
+│  ✅ digitalocean/app.yaml criado                           │
+│  ✅ Código commitado e pushado                             │
+│                                                             │
+│  ⏳ Aguardando:                                             │
+│     - DO_API_TOKEN nos GitHub Secrets                      │
+│     - DO_APP_ID nos GitHub Secrets                         │
+│     - Variáveis de ambiente no DigitalOcean                │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🎬 3 AÇÕES RÁPIDAS QUE VOCÊ PRECISA FAZER
+
+### ▶️ AÇÃO 1: Gerar a chave de autenticação
+
+```bash
+openssl rand -base64 32
+```
+
+**Copie a saída que aparecer** (será uma string aleatória)
+
+---
+
+### ▶️ AÇÃO 2: Adicionar secrets no GitHub
+
+Abra em um novo aba: 
+👉 **https://github.com/zepedrascarneiro/air-x-control/settings/secrets/actions**
+
+Clique em "**New repository secret**" e crie DOIS secrets:
+
+**Secret 1 de 2:**
+```
+Name: DO_API_TOKEN
+Value: [seu token da DigitalOcean]
+```
+
+**Secret 2 de 2:**
+```
+Name: DO_APP_ID
+Value: [seu ID da app, ex: app-xxxxxxxxxxxxx]
+```
+
+---
+
+### ▶️ AÇÃO 3: Configurar variáveis no DigitalOcean
+
+Abra em um novo aba:
+👉 **https://cloud.digitalocean.com/apps**
+
+1. Clique em sua app "air-x-control"
+2. Vá para "**Settings**"
+3. Role para "**Environment Variables**"
+4. Clique "**Edit**"
+
+Adicione estas 5 variáveis:
+
+```
+NODE_ENV = production
+DATABASE_URL = file:./prisma/dev.db
+ALLOW_SELF_SIGNUP = false
+NEXTAUTH_SECRET = [cole aqui o que gerou no Passo 1]
+NEXTAUTH_URL = [deixe em branco - sistema preencherá]
+```
+
+5. Clique "**Save**"
+
+---
+
+## 🚀 O QUE ACONTECE DEPOIS
+
+✅ Deploy automático inicia
+✅ Seu app sobe em produção
+✅ Você recebe um link (algo como: `https://air-x-xxxxx.ondigitalocean.app`)
+
+---
+
+## 📍 COMO CONSEGUIR OS VALORES NECESSÁRIOS
+
+### Para DO_API_TOKEN:
+1. Vá para: https://cloud.digitalocean.com/account/api/tokens/new
+2. Nome: `GitHub Deploy`
+3. Marque: "Write"
+4. Gerar Token
+5. **Copie e SALVE EM UM LUGAR** (não mostra de novo!)
+
+### Para DO_APP_ID:
+1. Vá para: https://cloud.digitalocean.com/apps
+2. Clique na sua app
+3. Olhe a URL - ela tem: `app-xxxxxxxxxxxxx`
+4. **Copie esse ID**
+
+---
+
+## ✅ CHECKLIST FINAL
+
+- [ ] Gerou NEXTAUTH_SECRET (comando acima)
+- [ ] Adicionou DO_API_TOKEN nos Secrets do GitHub
+- [ ] Adicionou DO_APP_ID nos Secrets do GitHub
+- [ ] Configurou 5 variáveis no DigitalOcean
+- [ ] Salvou no DigitalOcean
+- [ ] Deploy iniciou (veja em GitHub Actions)
+
+---
+
+## 📺 ONDE ACOMPANHAR
+
+**GitHub Actions (build):**
+https://github.com/zepedrascarneiro/air-x-control/actions
+
+**DigitalOcean (deploy):**
+https://cloud.digitalocean.com/apps
+
+**Sua app rodando:**
+https://air-x-[seu-dominio].ondigitalocean.app
+
+---
+
+## 🎯 PRÓXIMO PASSO
+
+Faça as 3 ações acima, depois me avisa que foi feito. Aí eu:
+- Confirmo se tudo ta certo
+- Testamos juntos
+- Você compartilha com seus amigos
