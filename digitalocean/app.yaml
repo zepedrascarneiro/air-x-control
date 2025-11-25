@@ -1,0 +1,28 @@
+name: air-x-control
+services:
+  - name: web
+    github:
+      repo: zepedrascarneiro/air-x-control
+      branch: main
+    build_command: npm install && npm run build
+    run_command: npm run start
+    http_port: 3000
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:./prisma/dev.db
+      - key: ALLOW_SELF_SIGNUP
+        value: "false"
+      - key: NEXTAUTH_SECRET
+        scope: RUN_TIME
+        value: ${NEXTAUTH_SECRET}
+      - key: NEXTAUTH_URL
+        scope: RUN_TIME
+        value: ${APP_DOMAIN}
+    source_dir: /
+    health_check:
+      http_path: /
+    http_port_number: 3000
+databases: []
+static_sites: []
