@@ -4,7 +4,7 @@ services:
     github:
       repo: zepedrascarneiro/air-x-control
       branch: main
-    build_command: npm install && npm run build
+    build_command: bash scripts/build.sh
     run_command: npm run start
     http_port: 3000
     envs:
