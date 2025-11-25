@@ -67,3 +67,57 @@
 .gold-gradient {
   background: linear-gradient(135deg, #a16207 0%, #eab308 50%, #fde047 100%);
 }
+
+/* Tour Highlight Styles */
+.tour-highlight {
+  position: relative;
+  z-index: 45;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  animation: pulse-highlight 2s ease-in-out infinite;
+}
+
+@keyframes pulse-highlight {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.3), 0 0 30px rgba(59, 130, 246, 0.2);
+  }
+}
+
+/* Demo Dashboard Monthly Chart Bars */
+.monthly-bar {
+  transition: all 0.3s ease;
+}
+
+.monthly-bar:hover {
+  filter: brightness(1.1);
+}
+
+/* Expense Category Progress Bars */
+.expense-progress {
+  transition: width 0.5s ease-out;
+}
+
+/* Monthly Chart Bar Heights */
+.bar-h-50 { height: 50%; }
+.bar-h-76 { height: 76%; }
+.bar-h-61 { height: 61%; }
+.bar-h-91 { height: 91%; }
+.bar-h-58 { height: 58%; }
+.bar-h-99 { height: 99%; }
+
+/* Category colors for progress bars */
+.progress-fuel { background-color: #3b82f6; }
+.progress-maintenance { background-color: #10b981; }
+.progress-hangar { background-color: #8b5cf6; }
+.progress-insurance { background-color: #f59e0b; }
+.progress-fees { background-color: #ef4444; }
+
+/* Category widths based on percentage of total (24690) */
+.progress-w-30 { width: 30%; } /* fuel: 7300 = ~30% */
+.progress-w-34 { width: 34%; } /* maintenance: 8500 = ~34% */
+.progress-w-18 { width: 18%; } /* hangar: 4500 = ~18% */
+.progress-w-10 { width: 10%; } /* insurance: 2500 = ~10% */
+.progress-w-8 { width: 8%; }   /* fees: 1890 = ~8% */

@@ -98,13 +98,7 @@ export default async function Home() {
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
             <Link
-              href="/dashboard"
-              className="rounded-lg border-2 border-white px-8 py-4 text-lg font-semibold text-white transition-all hover:bg-white hover:text-air-blue-900"
-            >
-              Ver Dashboard
-            </Link>
-            <Link
-              href="/demo"
+              href="/demo-dashboard"
               className="transform rounded-lg bg-air-gold-400 px-8 py-4 text-lg font-semibold text-air-blue-900 transition-all hover:scale-105 hover:bg-air-gold-300"
             >
               Ver Demonstração

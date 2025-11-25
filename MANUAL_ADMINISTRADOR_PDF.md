@@ -3,27 +3,35 @@ title: "Manual do Administrador - Air X Control"
 subtitle: "Sistema de Gestão de Aviação Compartilhada"
 author: "Air X Control"
 date: "Novembro 2025"
-version: "1.0"
+version: "2.0"
 ---
 
 # Manual do Administrador
 
 ## Air X Control - Sistema de Gestão de Aviação Compartilhada
 
+### 🎯 Guia Completo de Operação e Administração
+
 ---
 
 ## 📋 Índice
 
 1. [Acesso ao Sistema](#acesso-ao-sistema)
-2. [Visão Geral do Dashboard](#visão-geral-do-dashboard)
-3. [Hierarquia de Usuários](#hierarquia-de-usuários)
-4. [Gestão de Aeronaves](#gestão-de-aeronaves)
-5. [Registro de Voos](#registro-de-voos)
-6. [Controle de Despesas](#controle-de-despesas)
-7. [Divisão de Custos](#divisão-de-custos)
-8. [Gerenciamento de Usuários](#gerenciamento-de-usuários)
-9. [Relatórios e Exportação](#relatórios-e-exportação)
-10. [Solução de Problemas](#solução-de-problemas)
+2. [Credenciais e Usuários de Teste](#credenciais-e-usuarios-de-teste)
+3. [Visão Geral do Dashboard](#visão-geral-do-dashboard)
+4. [Painel Administrativo](#painel-administrativo)
+5. [Hierarquia de Usuários](#hierarquia-de-usuários)
+6. [Gestão de Aeronaves](#gestão-de-aeronaves)
+7. [Registro de Voos](#registro-de-voos)
+8. [Controle de Despesas](#controle-de-despesas)
+9. [Divisão de Custos](#divisão-de-custos)
+10. [Gerenciamento de Usuários](#gerenciamento-de-usuários)
+11. [Gestão de Demo Requests](#gestão-de-demo-requests)
+12. [Relatórios e Exportação](#relatórios-e-exportação)
+13. [Configurações do Sistema](#configurações-do-sistema)
+14. [Solução de Problemas](#solução-de-problemas)
+15. [Comandos de Terminal](#comandos-de-terminal)
+16. [Arquitetura Técnica](#arquitetura-técnica)
 
 ---
 

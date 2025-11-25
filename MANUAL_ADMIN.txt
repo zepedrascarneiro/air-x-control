@@ -1,0 +1,350 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                                                                           ║
+║           📚 MANUAL DO ADMINISTRADOR - AIR X CONTROL                     ║
+║                                                                           ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+🌐 URL DA APLICAÇÃO
+═══════════════════════════════════════════════════════════════════════════
+
+https://air-x-control-9tnmi.ondigitalocean.app
+
+───────────────────────────────────────────────────────────────────────────
+
+🔑 CREDENCIAIS DE ACESSO
+═══════════════════════════════════════════════════════════════════════════
+
+USUÁRIO ADMINISTRADOR MESTRE:
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Email: admin@airx.com                                                   │
+│ Senha: AirX2024Admin!                                                   │
+│ Papel: ADMIN (acesso total)                                             │
+└─────────────────────────────────────────────────────────────────────────┘
+
+USUÁRIO DE TESTE (Editor/Controlador):
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Email: editor@airx.dev                                                  │
+│ Senha: (definida no seed - padrão)                                      │
+│ Papel: CONTROLLER (pode editar voos e despesas)                         │
+└─────────────────────────────────────────────────────────────────────────┘
+
+───────────────────────────────────────────────────────────────────────────
+
+📊 PAINÉIS DISPONÍVEIS
+═══════════════════════════════════════════════════════════════════════════
+
+1️⃣  DASHBOARD PRINCIPAL
+    URL: /dashboard
+    
+    O que você vê:
+    ✓ Resumo de aeronaves ativas
+    ✓ Total de horas da frota
+    ✓ Voos no período selecionado
+    ✓ Custo operacional total
+    ✓ Linha do tempo mensal
+    ✓ Divisão de custos por coproprietário
+    ✓ Próximos voos agendados
+    ✓ Voos recentes concluídos
+    ✓ Despesas recentes
+    ✓ Top categorias de gastos
+    
+    Recursos especiais:
+    - Filtro de período (mês atual, últimos 3/6 meses, ano, customizado)
+    - Exportar dados
+    - Painel de edição (se for ADMIN ou CONTROLLER)
+
+2️⃣  PAINEL DE EDIÇÃO (Dentro do Dashboard)
+    
+    Se você for ADMIN ou CONTROLLER, verá botões para:
+    
+    ✓ CRIAR NOVA AERONAVE
+      - Matrícula, modelo, fabricante, ano
+      - Status, horas totais
+      - Próxima manutenção
+    
+    ✓ CRIAR NOVO VOO
+      - Data do voo
+      - Aeronave e piloto
+      - Origem e destino
+      - Combustível inicial/final
+      - Duração em horas
+      - Absorção de base
+      - Custos de viagem e manutenção
+      - Upload de anexos
+      - Notas
+    
+    ✓ CRIAR NOVA DESPESA
+      - Data da despesa
+      - Categoria (Combustível, Manutenção, Hangar, etc.)
+      - Valor
+      - Responsável pelo pagamento
+      - Voo relacionado (opcional)
+      - Notas
+
+3️⃣  PAINEL ADMINISTRATIVO (A SER CRIADO)
+    URL: /admin (vou criar agora)
+    
+    O que terá:
+    ✓ Lista de todos os usuários cadastrados
+    ✓ Solicitações de demonstração
+    ✓ Logs de atividade
+    ✓ Gerenciar permissões
+    ✓ Ativar/desativar usuários
+
+───────────────────────────────────────────────────────────────────────────
+
+👥 HIERARQUIA DE PAPÉIS (ROLES)
+═══════════════════════════════════════════════════════════════════════════
+
+ADMIN (Administrador Completo):
+  ✓ Acesso total ao sistema
+  ✓ Criar/editar/deletar tudo
+  ✓ Gerenciar usuários
+  ✓ Ver painel administrativo
+  ✓ Exportar dados
+  
+CONTROLLER (Administrador/Comandante):
+  ✓ Criar/editar/deletar voos
+  ✓ Criar/editar/deletar despesas
+  ✓ Criar/editar aeronaves
+  ✓ Ver dashboard completo
+  ✓ Não pode gerenciar usuários
+  
+PILOT (Copiloto):
+  ✓ Ver dashboard
+  ✓ Ver seus próprios voos
+  ✓ Editar voos que pilotou
+  ✓ Não pode deletar
+  
+VIEWER (Proprietário/Passageiro):
+  ✓ Ver dashboard (somente leitura)
+  ✓ Ver voos e despesas
+  ✓ Ver relatórios
+  ✓ Não pode editar nada
+  
+CTM (Controle de Manutenção):
+  ✓ Ver dashboard
+  ✓ Criar/editar despesas de manutenção
+  ✓ Ver histórico de manutenções
+  ✓ Não pode criar voos
+
+───────────────────────────────────────────────────────────────────────────
+
+📋 COMO USAR O SISTEMA
+═══════════════════════════════════════════════════════════════════────────
+
+FLUXO BÁSICO:
+
+1. FAZER LOGIN
+   → https://air-x-control-9tnmi.ondigitalocean.app/login
+   → Use as credenciais admin@airx.com
+
+2. VER DASHBOARD
+   → Automaticamente redirecionado para /dashboard
+   → Veja resumo completo da operação
+
+3. FILTRAR PERÍODO
+   → Use o seletor no topo da página
+   → Opções: Mês atual, Últimos 3 meses, Últimos 6 meses, Ano, Customizado
+
+4. CRIAR AERONAVE (se necessário)
+   → Role até o final da página
+   → Clique "Criar Nova Aeronave"
+   → Preencha os dados
+   → Salve
+
+5. REGISTRAR VOO
+   → Role até o final da página
+   → Clique "Criar Novo Voo"
+   → Preencha todos os campos:
+     • Data e hora do voo
+     • Selecione aeronave e piloto
+     • Origem → Destino
+     • Combustível inicial e final (litros)
+     • Duração (horas decimais, ex: 1.5)
+     • Absorção de base, impostos
+     • Despesas de viagem/manutenção
+     • Upload de documentos (opcional)
+   → Salve
+
+6. REGISTRAR DESPESA
+   → Role até o final da página
+   → Clique "Criar Nova Despesa"
+   → Preencha:
+     • Data
+     • Categoria
+     • Valor
+     • Quem pagou
+     • Voo relacionado (se aplicável)
+   → Salve
+
+7. VISUALIZAR DIVISÃO DE CUSTOS
+   → No dashboard, veja a seção "Divisão por Coproprietário"
+   → Mostra quanto cada um deve pagar proporcionalmente
+
+8. EXPORTAR DADOS
+   → Botão "Exportar" (se disponível)
+   → Gera planilha Excel com todos os dados do período
+
+───────────────────────────────────────────────────────────────────────────
+
+🔍 ONDE VER O QUÊ
+═══════════════════════════════════════════════════════════════════════════
+
+USUÁRIOS CADASTRADOS:
+  → Atualmente: Ver no banco de dados
+  → Em breve: Painel /admin (vou criar)
+  → Alternativa: Usar Prisma Studio localmente
+    $ cd /Users/josecarneiro/Desktop/Air\ X\ Control
+    $ npx prisma studio
+
+SOLICITAÇÕES DE DEMO:
+  → Tabela: DemoRequest no banco
+  → Via Prisma Studio: Campo "status" mostra PENDING/CONTACTED/CLOSED
+  → Em breve: Painel /admin
+
+VOOS CADASTRADOS:
+  → Dashboard → Seção "Voos concluídos recentemente"
+  → Dashboard → Seção "Próximos voos" (futuros)
+  → Filtrar por período para ver mais
+
+DESPESAS:
+  → Dashboard → Seção "Despesas recentes"
+  → Dashboard → "Top gastos no período"
+
+AERONAVES:
+  → Dashboard → Card "Aeronaves ativas"
+  → Painel de edição → Lista de aeronaves
+
+───────────────────────────────────────────────────────────────────────────
+
+💾 BANCO DE DADOS (Via Prisma Studio)
+═══════════════════════════════════════════════════════════════════════════
+
+Para acessar o banco de dados localmente:
+
+1. Abra o terminal
+2. Navegue para o projeto:
+   $ cd /Users/josecarneiro/Desktop/Air\ X\ Control
+
+3. Execute Prisma Studio:
+   $ npx prisma studio
+
+4. Abre em: http://localhost:5555
+
+5. Tabelas disponíveis:
+   - User: Todos os usuários
+   - Aircraft: Aeronaves cadastradas
+   - Flight: Voos registrados
+   - Expense: Despesas lançadas
+   - DemoRequest: Solicitações de demonstração
+   - Session: Sessões ativas de usuários
+
+───────────────────────────────────────────────────────────────────────────
+
+🔐 CRIAR NOVO USUÁRIO ADMINISTRADOR
+═══════════════════════════════════════════════════════════════════════════
+
+Via Terminal (RECOMENDADO):
+
+1. Abra o terminal
+2. Execute:
+   $ cd /Users/josecarneiro/Desktop/Air\ X\ Control
+   $ node -e "
+   const bcrypt = require('bcryptjs');
+   const { PrismaClient } = require('@prisma/client');
+   const prisma = new PrismaClient();
+   
+   async function createAdmin() {
+     const hash = await bcrypt.hash('AirX2024Admin!', 10);
+     const user = await prisma.user.create({
+       data: {
+         email: 'admin@airx.com',
+         name: 'Administrador Master',
+         hashedPassword: hash,
+         role: 'ADMIN',
+         status: 'ACTIVE'
+       }
+     });
+     console.log('✅ Admin criado:', user.email);
+     await prisma.\$disconnect();
+   }
+   
+   createAdmin().catch(console.error);
+   "
+
+Via Interface:
+1. Acesse /register (se cadastro estiver aberto)
+2. Depois, no banco, mude o role para 'ADMIN' via Prisma Studio
+
+───────────────────────────────────────────────────────────────────────────
+
+📱 COMPARTILHAR COM COPROPRIETÁRIOS
+═══════════════════════════════════════════════════════════════════════════
+
+OPÇÃO 1 - Cadastro aberto:
+  1. Vá para digitalocean/app.yaml
+  2. Mude ALLOW_SELF_SIGNUP para "true"
+  3. Compartilhe: https://air-x-control-9tnmi.ondigitalocean.app/register
+  4. Eles se cadastram sozinhos
+  5. Você aprova/define o papel deles depois
+
+OPÇÃO 2 - Você cria as contas:
+  1. Use o script acima para criar usuários
+  2. Defina role apropriado (VIEWER para coproprietários)
+  3. Envie email e senha para eles
+  4. Eles fazem login em /login
+
+OPÇÃO 3 - Link de demonstração:
+  1. Eles preenchem o form em /demo
+  2. Você recebe a solicitação
+  3. Entra em contato e cria a conta manualmente
+
+───────────────────────────────────────────────────────────────────────────
+
+🛠️ PRÓXIMOS PASSOS QUE VOU CRIAR AGORA
+═══════════════════════════════════════════════════════════════════════════
+
+1. ✅ Criar usuário admin master
+2. ✅ Criar painel /admin com:
+   - Lista de usuários
+   - Solicitações de demo
+   - Gerenciar permissões
+3. ✅ Adicionar filtros e busca
+4. ✅ Exportar relatórios
+
+───────────────────────────────────────────────────────────────────────────
+
+📞 COMANDOS ÚTEIS
+═══════════════════════════════════════════════════════════════════════════
+
+# Ver logs da aplicação
+doctl apps logs 6e5b8e1d-1872-40b3-9b8d-53c0a542d721 --follow
+
+# Acessar banco local
+npx prisma studio
+
+# Ver usuários no banco
+npx prisma db seed (se tiver seed configurado)
+
+# Fazer backup do banco
+cp prisma/dev.db prisma/dev.db.backup
+
+───────────────────────────────────────────────────────────────────────────
+
+✅ RESUMO RÁPIDO
+═══════════════════════════════════════════════════════════════════════════
+
+URL: https://air-x-control-9tnmi.ondigitalocean.app
+Login: admin@airx.com / AirX2024Admin!
+
+Dashboard → Ver tudo
+Editor (no fim da página) → Criar/Editar
+Admin (em breve) → Gerenciar usuários
+
+───────────────────────────────────────────────────────────────────────────
+
+📧 SUPORTE
+═══════════════════════════════════════════────────────────────────────════
+
+Qualquer dúvida, me avise e te ajudo!
