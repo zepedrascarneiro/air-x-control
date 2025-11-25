@@ -23,6 +23,5 @@ services:
     source_dir: /
     health_check:
       http_path: /
-    http_port_number: 3000
 databases: []
 static_sites: []
