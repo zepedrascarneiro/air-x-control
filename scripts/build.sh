@@ -4,11 +4,11 @@ set -e
 echo "🔧 Gerando Prisma Client..."
 npx prisma generate
 
-echo "🗄️ Resetando banco de dados..."
-rm -f ./prisma/dev.db ./prisma/dev.db-journal
+echo "🗄️ Forçando reset completo do banco..."
+rm -rf ./prisma/dev.db ./prisma/dev.db-journal 2>/dev/null || true
 
-echo "🗄️ Executando migrations..."
-npx prisma migrate deploy
+echo "🗄️ Criando banco com schema atualizado..."
+npx prisma db push --force-reset --accept-data-loss
 
 echo "📦 Building Next.js..."
 npm run build
