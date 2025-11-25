@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   differenceInCalendarMonths,
   endOfDay,
@@ -12,7 +13,22 @@ import {
   subMonths,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ArrowUpRight, PlaneTakeoff, Receipt, Timer } from "lucide-react";
+import { 
+  Plane, 
+  Clock, 
+  DollarSign, 
+  BarChart3,
+  Calendar,
+  MapPin,
+  Fuel,
+  Users,
+  TrendingUp,
+  AlertTriangle,
+  Plus,
+  Wrench,
+  ArrowRight,
+  Settings,
+} from "lucide-react";
 
 import { EditorPanel } from "@/components/editor/editor-panel";
 import {
@@ -20,7 +36,6 @@ import {
   type PeriodKey,
 } from "@/components/dashboard/period-selector";
 import { MonthlyTimeline } from "@/components/dashboard/monthly-timeline";
-import { OwnerSharePanel } from "@/components/dashboard/owner-share-panel";
 import { LogoutButton } from "@/components/logout-button";
 import { requireCurrentUser } from "@/lib/auth";
 import { getDashboardData } from "@/lib/dashboard";
@@ -34,20 +49,15 @@ type ExpenseCategory = DashboardData["expensesByCategory"][number];
 
 function formatDate(value: Date | string | null | undefined) {
   if (!value) return "-";
-
   const date = value instanceof Date ? value : new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return "-";
-  }
-
-  return format(date, "dd MMM yyyy HH:mm", { locale: ptBR });
+  if (Number.isNaN(date.getTime())) return "-";
+  return format(date, "dd MMM", { locale: ptBR });
 }
 
 const ROLE_LABELS = {
-  ADMIN: "Administrador / Comandante",
-  CONTROLLER: "Administrador / Comandante",
-  VIEWER: "Proprietário / Passageiro",
+  ADMIN: "Administrador",
+  CONTROLLER: "Comandante",
+  VIEWER: "Proprietário",
   PILOT: "Copiloto",
   CTM: "CTM",
 } as const;
@@ -55,9 +65,7 @@ const ROLE_LABELS = {
 const PERIOD_DEFAULT: PeriodKey = "current-month";
 
 function isPeriodKey(value: string): value is PeriodKey {
-  return ["current-month", "last-3-months", "last-6-months", "year-to-date", "custom"].includes(
-    value,
-  );
+  return ["current-month", "last-3-months", "last-6-months", "year-to-date", "custom"].includes(value);
 }
 
 function resolvePeriod(searchParams: Record<string, string | string[] | undefined>) {
@@ -82,23 +90,15 @@ function resolvePeriod(searchParams: Record<string, string | string[] | undefine
       startDate = startOfYear(now);
       break;
     case "custom": {
-      const startParam =
-        typeof searchParams.start === "string" ? parseISO(searchParams.start) : null;
+      const startParam = typeof searchParams.start === "string" ? parseISO(searchParams.start) : null;
       const endParam = typeof searchParams.end === "string" ? parseISO(searchParams.end) : null;
-
-      if (startParam && isValid(startParam)) {
-        startDate = startOfDay(startParam);
-      }
-      if (endParam && isValid(endParam)) {
-        endDate = endOfDay(endParam);
-      }
-
+      if (startParam && isValid(startParam)) startDate = startOfDay(startParam);
+      if (endParam && isValid(endParam)) endDate = endOfDay(endParam);
       if (startDate > endDate) {
         const temp = startDate;
         startDate = endDate;
         endDate = temp;
       }
-
       break;
     }
     default:
@@ -107,6 +107,55 @@ function resolvePeriod(searchParams: Record<string, string | string[] | undefine
 
   return { period, startDate, endDate };
 }
+
+// Summary Card Component
+function SummaryCard({ 
+  icon, 
+  label, 
+  value, 
+  subValue,
+  color 
+}: { 
+  icon: React.ReactNode; 
+  label: string; 
+  value: string | number;
+  subValue?: string;
+  color: string;
+}) {
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">{label}</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">{value}</p>
+          {subValue && (
+            <p className="text-xs text-slate-400 mt-1">{subValue}</p>
+          )}
+        </div>
+        <div className={`p-3 rounded-xl ${color}`}>
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Category icon mapping
+const categoryIcons: Record<string, React.ReactNode> = {
+  'FUEL': <Fuel className="w-5 h-5" />,
+  'MAINTENANCE': <Wrench className="w-5 h-5" />,
+  'HANGAR': <MapPin className="w-5 h-5" />,
+  'INSURANCE': <AlertTriangle className="w-5 h-5" />,
+  'AIRPORT_FEES': <DollarSign className="w-5 h-5" />,
+};
+
+const categoryColors: Record<string, string> = {
+  'FUEL': 'bg-blue-50 text-blue-600',
+  'MAINTENANCE': 'bg-green-50 text-green-600',
+  'HANGAR': 'bg-purple-50 text-purple-600',
+  'INSURANCE': 'bg-amber-50 text-amber-600',
+  'AIRPORT_FEES': 'bg-red-50 text-red-600',
+};
 
 export default async function DashboardPage({
   searchParams = {},
@@ -117,6 +166,7 @@ export default async function DashboardPage({
   const user = await requireCurrentUser();
   const data = await getDashboardData({ startDate, endDate });
   const canManage = user.role === "ADMIN" || user.role === "CONTROLLER";
+  
   const {
     summary,
     upcomingFlights,
@@ -138,328 +188,375 @@ export default async function DashboardPage({
     costPerHourInPeriod,
   } = summary;
 
-  const periodRangeLabel = `${format(startDate, "dd MMM yyyy", { locale: ptBR })} – ${format(
-    endDate,
-    "dd MMM yyyy",
-    { locale: ptBR },
-  )}`;
-  const monthsInRange =
-    differenceInCalendarMonths(endOfMonth(endDate), startOfMonth(startDate)) + 1;
+  const periodRangeLabel = `${format(startDate, "dd MMM yyyy", { locale: ptBR })} – ${format(endDate, "dd MMM yyyy", { locale: ptBR })}`;
+  const monthsInRange = differenceInCalendarMonths(endOfMonth(endDate), startOfMonth(startDate)) + 1;
   const periodStartInput = format(startDate, "yyyy-MM-dd");
   const periodEndInput = format(endDate, "yyyy-MM-dd");
-
-  const summaryItems = [
-    {
-      label: "Aeronaves ativas",
-      value: `${availableAircraft}/${totalAircraft}`,
-      description: "Disponíveis hoje",
-      icon: PlaneTakeoff,
-    },
-    {
-      label: "Horas totais da frota",
-      value: `${totalFleetHours.toFixed(1)}h`,
-      description: "Acumulado geral",
-      icon: Timer,
-    },
-    {
-      label: "Voos no período",
-      value: `${flightsInPeriod} voos`,
-      description: `${hoursInPeriod.toFixed(1)}h registradas`,
-      icon: ArrowUpRight,
-    },
-    {
-      label: "Custo operacional",
-      value: formatCurrency(totalCostInPeriod || 0),
-      description: `Média/hora: ${formatCurrency(costPerHourInPeriod || 0)} · Despesas: ${formatCurrency(
-        totalExpensesInPeriod || 0,
-      )}`,
-      icon: Receipt,
-    },
-  ];
-
   const totalSharedAmount = totalCostInPeriod + totalExpensesInPeriod;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-air-blue-900 via-air-blue-700 to-air-blue-500 pb-20">
-      <div className="container mx-auto px-4 py-12 text-white">
-        <header className="mb-10">
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <div>
-              <div className="mb-4 flex items-center gap-3">
-                <div className="relative h-12 w-12">
-                  <Image
-                    src="/airx-logo.svg"
-                    alt="Logotipo Air X Control"
-                    fill
-                    sizes="3rem"
-                    priority
-                  />
-                </div>
-                <div className="flex flex-col leading-tight">
-                  <span className="text-lg font-semibold text-white">Air X</span>
-                  <span className="text-xs uppercase tracking-[0.35em] text-air-blue-200">
-                    Control
-                  </span>
-                </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      {/* Header */}
+      <header className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
+                <Plane className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-4xl font-bold">Painel Operacional</h1>
-              <p className="mt-3 max-w-2xl text-air-blue-100">
-                Visão consolidada para compartilhar com os coproprietários o desempenho do período
-                selecionado, próximos voos e o impacto financeiro de cada aeronave.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/10 px-5 py-4 backdrop-blur">
               <div>
-                <p className="text-xs uppercase tracking-wide text-air-blue-200">Usuário ativo</p>
-                <p className="text-lg font-semibold text-white">{user.name}</p>
-                <p className="text-xs text-air-blue-200">
-                  {ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] ?? "Colaborador"}
-                </p>
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white">Air X Control</h1>
+                <p className="text-xs text-slate-500">Painel Operacional</p>
               </div>
-              <LogoutButton />
+            </div>
+
+            <div className="flex items-center gap-4">
+              {/* User info */}
+              <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  {user.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">{user.name}</p>
+                  <p className="text-xs text-slate-500">{ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] ?? "Colaborador"}</p>
+                </div>
+              </div>
+              
+              {canManage && (
+                <Link
+                  href="/admin"
+                  className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                  title="Administração"
+                >
+                  <Settings className="w-5 h-5" />
+                </Link>
+              )}
+              
+              <LogoutButton 
+                label=""
+                variant="ghost"
+                className="p-2 text-slate-500 hover:text-red-600 transition-colors"
+              />
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="text-sm text-air-blue-100">
-            <p>
-              Período analisado:
-              {" "}
-              <span className="font-semibold text-white">{periodRangeLabel}</span>
-            </p>
-            <p>
-              Divisão mensal:
-              {" "}
-              {monthsInRange}
-              {" "}
-              {monthsInRange === 1 ? "mês" : "meses"}
-            </p>
+      {/* Period Banner */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-5 h-5" />
+              <div>
+                <p className="font-medium">{periodRangeLabel}</p>
+                <p className="text-sm text-blue-100">{monthsInRange} {monthsInRange === 1 ? "mês" : "meses"} analisados</p>
+              </div>
+            </div>
+            <DashboardPeriodSelector
+              period={period}
+              startDate={periodStartInput}
+              endDate={periodEndInput}
+            />
           </div>
-          <DashboardPeriodSelector
-            period={period}
-            startDate={periodStartInput}
-            endDate={periodEndInput}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <SummaryCard
+            icon={<Plane className="w-6 h-6 text-blue-600" />}
+            label="Aeronaves Ativas"
+            value={`${availableAircraft}/${totalAircraft}`}
+            subValue="Disponíveis hoje"
+            color="bg-blue-50 dark:bg-blue-900/30"
+          />
+          <SummaryCard
+            icon={<Clock className="w-6 h-6 text-green-600" />}
+            label="Horas Voadas"
+            value={`${hoursInPeriod.toFixed(1)}h`}
+            subValue={`Total da frota: ${totalFleetHours.toFixed(1)}h`}
+            color="bg-green-50 dark:bg-green-900/30"
+          />
+          <SummaryCard
+            icon={<BarChart3 className="w-6 h-6 text-purple-600" />}
+            label="Voos Realizados"
+            value={flightsInPeriod}
+            subValue="No período selecionado"
+            color="bg-purple-50 dark:bg-purple-900/30"
+          />
+          <SummaryCard
+            icon={<DollarSign className="w-6 h-6 text-amber-600" />}
+            label="Custo Total"
+            value={formatCurrency(totalSharedAmount)}
+            subValue={`Média/hora: ${formatCurrency(costPerHourInPeriod)}`}
+            color="bg-amber-50 dark:bg-amber-900/30"
           />
         </div>
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {summaryItems.map((item) => (
-            <div
-              key={item.label}
-              className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium uppercase tracking-wide text-air-blue-200">
-                  {item.label}
-                </span>
-                <item.icon className="h-5 w-5 text-air-gold-400" />
-              </div>
-              <strong className="text-2xl font-semibold">{item.value}</strong>
-              <span className="text-sm text-air-blue-200">{item.description}</span>
-            </div>
-          ))}
-        </section>
-
-        <section className="mt-10 rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-semibold">Divisão mensal do período</h2>
-              <p className="text-sm text-air-blue-200">
-                Compare voos, horas acumuladas e despesas mês a mês para acelerar as prestações de
-                contas.
-              </p>
-            </div>
-          </div>
-          <MonthlyTimeline timeline={monthlyTimeline} />
-        </section>
-
-        <section className="mt-12">
-          <OwnerSharePanel
-            owners={owners}
-            totalAmount={totalSharedAmount}
-            periodLabel={periodRangeLabel}
-          />
-        </section>
-
-        <section className="mt-12 grid gap-6 xl:grid-cols-3">
-          <div className="xl:col-span-2">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-semibold">Próximos voos</h2>
-                  <p className="text-sm text-air-blue-200">
-                    Agenda das próximas missões com foco em pontualidade e alocação de recursos.
-                  </p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Recent Flights */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-700">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Plane className="w-5 h-5 text-blue-500" />
+                    Voos Recentes
+                  </h2>
+                  <span className="text-sm text-slate-500">{recentFlights.length} voos</span>
                 </div>
               </div>
-
-              <div className="mt-6 overflow-x-auto">
-                <table className="min-w-full text-left text-sm">
-                  <thead className="text-air-blue-200">
-                    <tr>
-                      <th className="pb-3 pr-4">Data</th>
-                      <th className="pb-3 pr-4">Rota</th>
-                      <th className="pb-3 pr-4">Piloto</th>
-                      <th className="pb-3 pr-4">Aeronave</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/10">
-                    {upcomingFlights.length === 0 ? (
-                      <tr>
-                        <td
-                          colSpan={4}
-                          className="py-6 text-center text-air-blue-200"
-                        >
-                          Nenhum voo agendado para hoje em diante.
-                        </td>
-                      </tr>
-                    ) : (
-                      upcomingFlights.map((flight: UpcomingFlight) => (
-                        <tr key={flight.id} className="text-white">
-                          <td className="py-3 pr-4">{formatDate(flight.flightDate)}</td>
-                          <td className="py-3 pr-4">
-                            {flight.origin} → {flight.destination}
-                          </td>
-                          <td className="py-3 pr-4">{flight.pilot?.name ?? "—"}</td>
-                          <td className="py-3 pr-4">
-                            {flight.aircraft?.tailNumber ?? "—"}
-                            <span className="ml-2 text-xs text-air-blue-200">
-                              {flight.aircraft?.model ?? ""}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-              <h2 className="text-xl font-semibold">Top gastos no período</h2>
-              <p className="text-sm text-air-blue-200">
-                Categorias com maior impacto financeiro considerando o filtro atual.
-              </p>
-              <ul className="mt-5 space-y-3">
-                {expensesByCategory.length === 0 ? (
-                  <li className="text-air-blue-200">Nenhuma despesa registrada no período.</li>
+              <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                {recentFlights.length === 0 ? (
+                  <div className="p-8 text-center text-slate-500">
+                    Nenhum voo registrado no período.
+                  </div>
                 ) : (
-                  expensesByCategory.map((item: ExpenseCategory) => (
-                    <li key={item.category} className="flex items-center justify-between text-sm">
-                      <span>{item.category}</span>
-                      <strong>{formatCurrency(item.total)}</strong>
-                    </li>
+                  recentFlights.slice(0, 4).map((flight: RecentFlight) => (
+                    <div key={flight.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                            <Plane className="w-6 h-6 text-blue-600" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-slate-900 dark:text-white">
+                                {flight.origin}
+                              </span>
+                              <ArrowRight className="w-4 h-4 text-slate-400" />
+                              <span className="font-semibold text-slate-900 dark:text-white">
+                                {flight.destination}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm text-slate-500 mt-1">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="w-3.5 h-3.5" />
+                                {formatDate(flight.flightDate)}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3.5 h-3.5" />
+                                {flight.durationHours?.toFixed(1) ?? "-"}h
+                              </span>
+                              <span className="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">
+                                {flight.aircraft?.tailNumber ?? "-"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-slate-900 dark:text-white">
+                            {formatCurrency(Number(flight.totalCost) || 0)}
+                          </p>
+                          <p className="text-xs text-slate-500">{flight.pilot?.name ?? "-"}</p>
+                        </div>
+                      </div>
+                    </div>
                   ))
                 )}
-              </ul>
+              </div>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-              <h2 className="text-xl font-semibold">Resumo financeiro do período</h2>
-              <dl className="mt-4 space-y-2 text-sm text-air-blue-200">
-                <div className="flex items-center justify-between text-white">
-                  <dt>Total de despesas</dt>
-                  <dd>{formatCurrency(totalExpensesInPeriod)}</dd>
-                </div>
+            {/* Recent Expenses */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-700">
                 <div className="flex items-center justify-between">
-                  <dt>Custo operacional de voos</dt>
-                  <dd>{formatCurrency(totalCostInPeriod)}</dd>
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                    <DollarSign className="w-5 h-5 text-green-500" />
+                    Despesas Recentes
+                  </h2>
+                  <span className="text-sm text-slate-500">{recentExpenses.length} despesas</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <dt>Custo médio por hora</dt>
-                  <dd>{formatCurrency(costPerHourInPeriod)}</dd>
+              </div>
+              <div className="divide-y divide-slate-100 dark:divide-slate-700">
+                {recentExpenses.length === 0 ? (
+                  <div className="p-8 text-center text-slate-500">
+                    Nenhuma despesa registrada no período.
+                  </div>
+                ) : (
+                  recentExpenses.slice(0, 4).map((expense: RecentExpense) => (
+                    <div key={expense.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${categoryColors[expense.category] || 'bg-slate-100 text-slate-600'}`}>
+                            {categoryIcons[expense.category] || <DollarSign className="w-5 h-5" />}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900 dark:text-white">{expense.notes || expense.category}</p>
+                            <p className="text-sm text-slate-500">{formatDate(expense.expenseDate)}</p>
+                          </div>
+                        </div>
+                        <span className="font-semibold text-slate-900 dark:text-white">
+                          {formatCurrency(expense.amount)}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Monthly Timeline */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-5">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                <TrendingUp className="w-5 h-5 text-blue-500" />
+                Evolução Mensal
+              </h2>
+              <MonthlyTimeline timeline={monthlyTimeline} />
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Owner Division */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-700">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Users className="w-5 h-5 text-purple-500" />
+                  Coproprietários
+                </h2>
+              </div>
+              <div className="p-5 space-y-4">
+                {owners.length === 0 ? (
+                  <p className="text-slate-500 text-center py-4">Nenhum coproprietário cadastrado.</p>
+                ) : (
+                  owners.map((owner) => (
+                    <div key={owner.id} className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
+                          {owner.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-900 dark:text-white">{owner.name}</p>
+                          <p className="text-xs text-slate-500">{ROLE_LABELS[owner.role as keyof typeof ROLE_LABELS] ?? owner.role}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Expenses by Category */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-5">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                Despesas por Categoria
+              </h2>
+              <div className="space-y-3">
+                {expensesByCategory.length === 0 ? (
+                  <p className="text-slate-500 text-center py-4">Nenhuma despesa no período.</p>
+                ) : (
+                  expensesByCategory.map((cat: ExpenseCategory) => {
+                    const percentage = totalExpensesInPeriod > 0 ? (cat.total / totalExpensesInPeriod) * 100 : 0;
+                    return (
+                      <div key={cat.category}>
+                        <div className="flex items-center justify-between text-sm mb-1">
+                          <span className="text-slate-600 dark:text-slate-300">{cat.category}</span>
+                          <span className="font-medium text-slate-900 dark:text-white">
+                            {formatCurrency(cat.total)}
+                          </span>
+                        </div>
+                        <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-blue-500 rounded-full transition-all"
+                            style={{ width: `${Math.min(percentage, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Upcoming Flights */}
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-5">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                <Calendar className="w-5 h-5 text-amber-500" />
+                Próximos Voos
+              </h2>
+              <div className="space-y-3">
+                {upcomingFlights.length === 0 ? (
+                  <p className="text-slate-500 text-center py-4">Nenhum voo agendado.</p>
+                ) : (
+                  upcomingFlights.slice(0, 3).map((flight: UpcomingFlight) => (
+                    <div 
+                      key={flight.id}
+                      className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-slate-900 dark:text-white">
+                            {flight.origin} → {flight.destination}
+                          </p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
+                            {flight.aircraft?.tailNumber ?? "-"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-amber-600">
+                            {formatDate(flight.flightDate)}
+                          </p>
+                          <p className="text-xs text-slate-500">{flight.pilot?.name ?? "-"}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            {canManage && (
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 p-5">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                  Ações Rápidas
+                </h2>
+                <div className="space-y-2">
+                  <button className="w-full flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl text-blue-600 transition-colors">
+                    <Plus className="w-5 h-5" />
+                    <span className="font-medium">Registrar Novo Voo</span>
+                  </button>
+                  <button className="w-full flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-xl text-green-600 transition-colors">
+                    <Plus className="w-5 h-5" />
+                    <span className="font-medium">Adicionar Despesa</span>
+                  </button>
+                  <button className="w-full flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-xl text-purple-600 transition-colors">
+                    <Plus className="w-5 h-5" />
+                    <span className="font-medium">Nova Aeronave</span>
+                  </button>
                 </div>
-              </dl>
-            </div>
+              </div>
+            )}
           </div>
-        </section>
+        </div>
 
-        <section className="mt-12 grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-            <h2 className="text-2xl font-semibold">Voos concluídos recentemente</h2>
-            <p className="text-sm text-air-blue-200">
-              Destaque das últimas operações realizadas com notas sobre ocupação e custos.
+        {/* Editor Panel */}
+        {canManage && (
+          <section className="mt-8">
+            <EditorPanel canManage={canManage} />
+          </section>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Plane className="w-5 h-5 text-blue-600" />
+              <span className="font-semibold text-slate-900 dark:text-white">Air X Control</span>
+            </div>
+            <p className="text-sm text-slate-500">
+              © 2025 Air X Control. Gestão Inteligente para Aviação Compartilhada.
             </p>
-            <div className="mt-5 overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="text-air-blue-200">
-                  <tr>
-                    <th className="pb-3 pr-4">Data</th>
-                    <th className="pb-3 pr-4">Rota</th>
-                    <th className="pb-3 pr-4">Piloto</th>
-                    <th className="pb-3 pr-4">Responsável</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  {recentFlights.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="py-6 text-center text-air-blue-200">
-                        Ainda sem histórico registrado.
-                      </td>
-                    </tr>
-                  ) : (
-                    recentFlights.map((flight: RecentFlight) => (
-                      <tr key={flight.id} className="text-white">
-                        <td className="py-3 pr-4">{formatDate(flight.flightDate)}</td>
-                        <td className="py-3 pr-4">
-                          {flight.origin} → {flight.destination}
-                        </td>
-                        <td className="py-3 pr-4">{flight.pilot?.name ?? "—"}</td>
-                        <td className="py-3 pr-4">{flight.payer?.name ?? "—"}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
           </div>
-
-          <div className="rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-            <h2 className="text-2xl font-semibold">Despesas recentes</h2>
-            <p className="text-sm text-air-blue-200">
-              Compras e serviços que impactaram o caixa nos últimos lançamentos.
-            </p>
-            <div className="mt-5 overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="text-air-blue-200">
-                  <tr>
-                    <th className="pb-3 pr-4">Data</th>
-                    <th className="pb-3 pr-4">Categoria</th>
-                    <th className="pb-3 pr-4">Valor</th>
-                    <th className="pb-3 pr-4">Responsável</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  {recentExpenses.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="py-6 text-center text-air-blue-200">
-                        Nenhuma despesa registrada.
-                      </td>
-                    </tr>
-                  ) : (
-                    recentExpenses.map((expense: RecentExpense) => (
-                      <tr key={expense.id} className="text-white">
-                        <td className="py-3 pr-4">{formatDate(expense.expenseDate)}</td>
-                        <td className="py-3 pr-4">{expense.category}</td>
-                        <td className="py-3 pr-4">{formatCurrency(expense.amount)}</td>
-                        <td className="py-3 pr-4">{expense.paidBy?.name ?? "—"}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-12">
-          <EditorPanel canManage={canManage} />
-        </section>
-      </div>
-    </main>
+        </div>
+      </footer>
+    </div>
   );
 }
