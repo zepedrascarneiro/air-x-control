@@ -27,6 +27,7 @@ interface User {
   role: string;
   status: string;
   phone: string | null;
+  ownershipPct: number | null;
   createdAt: string;
   _count?: {
     flightsAsPilot: number;
@@ -142,6 +143,20 @@ export default function AdminPage() {
         body: JSON.stringify({ status: newStatus }),
       });
       if (!response.ok) throw new Error("Erro ao atualizar usuário");
+      loadData();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro ao atualizar");
+    }
+  }
+
+  async function updateUserOwnership(userId: string, newPct: number) {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ownershipPct: newPct }),
+      });
+      if (!response.ok) throw new Error("Erro ao atualizar participação");
       loadData();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro ao atualizar");
@@ -336,6 +351,9 @@ export default function AdminPage() {
                       Papel
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
+                      Participação %
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
                       Status
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">
@@ -389,10 +407,26 @@ export default function AdminPage() {
                         </select>
                       </td>
                       <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            value={user.ownershipPct || 0}
+                            onChange={(e) => updateUserOwnership(user.id, parseFloat(e.target.value) || 0)}
+                            className="w-20 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            title="Percentual de participação"
+                          />
+                          <span className="text-sm text-slate-500">%</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
                         <select
                           value={user.status}
                           onChange={(e) => updateUserStatus(user.id, e.target.value)}
                           disabled={user.id === currentUser?.id}
+                          title="Status do usuário"
                           className={`rounded-lg border px-3 py-1.5 text-sm font-medium focus:outline-none disabled:opacity-50 ${
                             user.status === "ACTIVE"
                               ? "border-green-200 bg-green-50 text-green-700"
@@ -427,7 +461,7 @@ export default function AdminPage() {
                   ))}
                   {users.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                      <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
                         Nenhum usuário cadastrado
                       </td>
                     </tr>

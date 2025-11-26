@@ -191,3 +191,34 @@ export function getSessionMetadataFromHeaders(): SessionMetadata {
     userAgent: userAgent ?? null,
   };
 }
+
+// Função para extrair sessão de uma NextRequest (usado em API routes)
+export async function getSessionFromRequest(request: Request) {
+  const cookieHeader = request.headers.get("cookie");
+  if (!cookieHeader) {
+    return null;
+  }
+
+  const cookies = cookieHeader.split(";").reduce((acc, cookie) => {
+    const [key, value] = cookie.trim().split("=");
+    acc[key] = value;
+    return acc;
+  }, {} as Record<string, string>);
+
+  const token = cookies[SESSION_COOKIE];
+  if (!token) {
+    return null;
+  }
+
+  const session = await findSessionByToken(token);
+  if (!session) {
+    return null;
+  }
+
+  if (session.expiresAt <= new Date()) {
+    await deleteSessionById(session.id);
+    return null;
+  }
+
+  return session;
+}

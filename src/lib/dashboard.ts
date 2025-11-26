@@ -137,6 +137,13 @@ export async function getDashboardData(params?: { startDate?: Date; endDate?: Da
       id: true,
       name: true,
       role: true,
+      ownershipPct: true,
+    },
+    where: {
+      role: {
+        in: ["ADMIN", "CONTROLLER", "VIEWER"],
+      },
+      status: "ACTIVE",
     },
     orderBy: {
       name: "asc",
@@ -282,6 +289,28 @@ export async function getDashboardData(params?: { startDate?: Date; endDate?: Da
     amount: decimalToNumber(expense.amount),
   }));
 
+  // Calcular divisão de custos proporcional por owner
+  const totalSharedAmount = totalCostInPeriod + totalExpensesInPeriod;
+  const totalOwnershipPct = owners.reduce(
+    (sum, owner) => sum + decimalToNumber(owner.ownershipPct),
+    0
+  );
+
+  const ownersWithShare = owners.map((owner) => {
+    const ownerPct = decimalToNumber(owner.ownershipPct);
+    // Se nenhum owner tem percentual definido, divide igualmente
+    const percentage = totalOwnershipPct > 0 
+      ? ownerPct 
+      : (100 / owners.length);
+    const shareAmount = totalSharedAmount * (percentage / 100);
+    
+    return {
+      ...owner,
+      ownershipPct: percentage,
+      shareAmount,
+    };
+  });
+
   return {
     summary: {
       totalAircraft,
@@ -303,6 +332,6 @@ export async function getDashboardData(params?: { startDate?: Date; endDate?: Da
     recentFlights,
     recentExpenses,
     expensesByCategory,
-    owners,
+    owners: ownersWithShare,
   };
 }

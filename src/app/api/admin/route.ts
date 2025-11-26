@@ -25,6 +25,7 @@ export async function GET() {
         role: true,
         status: true,
         phone: true,
+        ownershipPct: true,
         createdAt: true,
         _count: {
           select: {

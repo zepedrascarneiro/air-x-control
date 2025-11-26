@@ -21,10 +21,10 @@ export async function PATCH(
 
     const userId = params.id;
     const body = await request.json();
-    const { role, status } = body;
+    const { role, status, ownershipPct } = body;
 
-    // Não pode alterar a si mesmo
-    if (userId === currentUser.id) {
+    // Não pode alterar a si mesmo (exceto ownershipPct)
+    if (userId === currentUser.id && (role || status)) {
       return NextResponse.json(
         { message: "Você não pode alterar seu próprio papel ou status" },
         { status: 400 }
@@ -49,6 +49,7 @@ export async function PATCH(
       data: {
         ...(role && { role }),
         ...(status && { status }),
+        ...(ownershipPct !== undefined && { ownershipPct: parseFloat(ownershipPct) || 0 }),
       },
     });
 

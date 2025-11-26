@@ -36,6 +36,7 @@ import {
   type PeriodKey,
 } from "@/components/dashboard/period-selector";
 import { MonthlyTimeline } from "@/components/dashboard/monthly-timeline";
+import { ExportPdfButton } from "@/components/dashboard/export-pdf-button";
 import { LogoutButton } from "@/components/logout-button";
 import { requireCurrentUser } from "@/lib/auth";
 import { getDashboardData } from "@/lib/dashboard";
@@ -211,6 +212,16 @@ export default async function DashboardPage({
             </div>
 
             <div className="flex items-center gap-4">
+              {/* Calendar Link */}
+              <a
+                href="/calendar"
+                className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm"
+                title="Calendário de Reservas"
+              >
+                <Calendar className="w-4 h-4" />
+                <span className="hidden md:inline">Reservas</span>
+              </a>
+
               {/* User info */}
               <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
@@ -253,11 +264,38 @@ export default async function DashboardPage({
                 <p className="text-sm text-blue-100">{monthsInRange} {monthsInRange === 1 ? "mês" : "meses"} analisados</p>
               </div>
             </div>
-            <DashboardPeriodSelector
-              period={period}
-              startDate={periodStartInput}
-              endDate={periodEndInput}
-            />
+            <div className="flex items-center gap-3">
+              <ExportPdfButton
+                reportData={{
+                  period: periodRangeLabel,
+                  aircraft: "Todas",
+                  totalExpenses: totalExpensesInPeriod,
+                  totalFlights: flightsInPeriod,
+                  totalHours: hoursInPeriod,
+                  owners: owners.map((o, idx) => ({
+                    name: o.name,
+                    percentage: Math.round(100 / owners.length), // Divisão igual se não houver percentual
+                    amount: totalSharedAmount / owners.length,
+                  })),
+                  expenses: expensesByCategory.map(e => ({
+                    category: e.category,
+                    amount: e.total,
+                  })),
+                  flights: recentFlights.map(f => ({
+                    date: formatDate(f.flightDate),
+                    origin: f.origin,
+                    destination: f.destination,
+                    hours: Number(f.durationHours) || 0,
+                    pilot: f.pilot?.name ?? "N/A",
+                  })),
+                }}
+              />
+              <DashboardPeriodSelector
+                period={period}
+                startDate={periodStartInput}
+                endDate={periodEndInput}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -412,31 +450,56 @@ export default async function DashboardPage({
 
           {/* Right Column */}
           <div className="space-y-6">
-            {/* Owner Division */}
+            {/* Owner Division - Divisão de Custos */}
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
               <div className="p-5 border-b border-slate-100 dark:border-slate-700">
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                   <Users className="w-5 h-5 text-purple-500" />
-                  Coproprietários
+                  Divisão de Custos
                 </h2>
+                <p className="text-xs text-slate-500 mt-1">Período: {periodRangeLabel}</p>
               </div>
               <div className="p-5 space-y-4">
                 {owners.length === 0 ? (
                   <p className="text-slate-500 text-center py-4">Nenhum coproprietário cadastrado.</p>
                 ) : (
-                  owners.map((owner) => (
-                    <div key={owner.id} className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
-                          {owner.name.charAt(0)}
+                  <>
+                    {owners.map((owner) => (
+                      <div key={owner.id} className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold">
+                              {owner.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900 dark:text-white">{owner.name}</p>
+                              <p className="text-xs text-slate-500">{ROLE_LABELS[owner.role as keyof typeof ROLE_LABELS] ?? owner.role}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-slate-900 dark:text-white">
+                              {formatCurrency(owner.shareAmount)}
+                            </p>
+                            <p className="text-xs text-slate-500">{owner.ownershipPct.toFixed(1)}% de participação</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-slate-900 dark:text-white">{owner.name}</p>
-                          <p className="text-xs text-slate-500">{ROLE_LABELS[owner.role as keyof typeof ROLE_LABELS] ?? owner.role}</p>
+                        {/* Barra de progresso visual */}
+                        <div className="mt-3 h-2 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all"
+                            style={{ width: `${Math.min(owner.ownershipPct, 100)}%` }}
+                          />
                         </div>
                       </div>
+                    ))}
+                    {/* Total */}
+                    <div className="pt-4 border-t border-slate-200 dark:border-slate-600">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Total do Período</span>
+                        <span className="text-xl font-bold text-slate-900 dark:text-white">{formatCurrency(totalSharedAmount)}</span>
+                      </div>
                     </div>
-                  ))
+                  </>
                 )}
               </div>
             </div>
