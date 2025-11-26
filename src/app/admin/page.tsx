@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   Users,
   Calendar,
@@ -13,11 +12,15 @@ import {
   Mail,
   Phone,
   Building,
-  UserCog,
   LogOut,
   RefreshCw,
   Plane,
   DollarSign,
+  TrendingUp,
+  CreditCard,
+  Sparkles,
+  AlertTriangle,
+  BarChart3,
 } from "lucide-react";
 
 interface User {
@@ -55,6 +58,51 @@ interface Stats {
   totalExpenses: number;
 }
 
+interface SaaSMetrics {
+  totalOrganizations: number;
+  activeSubscriptions: number;
+  trialsActive: number;
+  mrr: number;
+  arr: number;
+  newOrgsThisMonth: number;
+  newOrgsLastMonth: number;
+  growthRate: number;
+  planDistribution: {
+    plan: string;
+    count: number;
+    percentage: number;
+  }[];
+  subscriptionStatus: {
+    active: number;
+    trialing: number;
+    past_due: number;
+    canceled: number;
+    none: number;
+  };
+  trialMetrics: {
+    active: number;
+    expiringSoon: number;
+    convertedThisMonth: number;
+  };
+  revenueHistory: {
+    month: string;
+    mrr: number;
+    newCustomers: number;
+    churned: number;
+  }[];
+  recentOrganizations: {
+    id: string;
+    name: string;
+    plan: string;
+    status: string;
+    subscriptionStatus: string | null;
+    memberCount: number;
+    aircraftCount: number;
+    createdAt: string;
+    trialEndsAt: string | null;
+  }[];
+}
+
 const ROLE_OPTIONS = ["ADMIN", "CONTROLLER", "PILOT", "VIEWER", "CTM"];
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: "Administrador",
@@ -85,7 +133,8 @@ export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [demoRequests, setDemoRequests] = useState<DemoRequest[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
-  const [activeTab, setActiveTab] = useState<"users" | "demos" | "stats">("users");
+  const [saasMetrics, setSaasMetrics] = useState<SaaSMetrics | null>(null);
+  const [activeTab, setActiveTab] = useState<"users" | "demos" | "saas">("saas");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -96,24 +145,36 @@ export default function AdminPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/admin");
-      if (response.status === 401) {
+      // Carregar dados em paralelo
+      const [adminResponse, saasResponse] = await Promise.all([
+        fetch("/api/admin"),
+        fetch("/api/admin/saas-metrics"),
+      ]);
+      
+      if (adminResponse.status === 401) {
         router.push("/login");
         return;
       }
-      if (response.status === 403) {
+      if (adminResponse.status === 403) {
         setError("Acesso negado. Apenas administradores podem acessar esta página.");
         setLoading(false);
         return;
       }
-      if (!response.ok) {
+      if (!adminResponse.ok) {
         throw new Error("Erro ao carregar dados");
       }
-      const data = await response.json();
-      setCurrentUser(data.currentUser);
-      setUsers(data.users);
-      setDemoRequests(data.demoRequests);
-      setStats(data.stats);
+      
+      const adminData = await adminResponse.json();
+      setCurrentUser(adminData.currentUser);
+      setUsers(adminData.users);
+      setDemoRequests(adminData.demoRequests);
+      setStats(adminData.stats);
+      
+      // Carregar métricas SaaS se disponível
+      if (saasResponse.ok) {
+        const saasData = await saasResponse.json();
+        setSaasMetrics(saasData);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
@@ -311,6 +372,17 @@ export default function AdminPage() {
         {/* Tabs */}
         <div className="mb-6 flex gap-2 border-b border-slate-200">
           <button
+            onClick={() => setActiveTab("saas")}
+            className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition ${
+              activeTab === "saas"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-500 hover:text-slate-900"
+            }`}
+          >
+            <BarChart3 className="h-4 w-4" />
+            Métricas SaaS
+          </button>
+          <button
             onClick={() => setActiveTab("users")}
             className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition ${
               activeTab === "users"
@@ -333,6 +405,269 @@ export default function AdminPage() {
             Solicitações de Demo ({demoRequests.length})
           </button>
         </div>
+
+        {/* SaaS Metrics Tab */}
+        {activeTab === "saas" && saasMetrics && (
+          <div className="space-y-6">
+            {/* KPI Cards - Receita */}
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <div className="rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-5 text-white shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-white/20">
+                    <DollarSign className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold">
+                      R$ {saasMetrics.mrr.toLocaleString("pt-BR")}
+                    </p>
+                    <p className="text-sm text-emerald-100">MRR (Receita Mensal)</p>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-5 text-white shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-white/20">
+                    <TrendingUp className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold">
+                      R$ {saasMetrics.arr.toLocaleString("pt-BR")}
+                    </p>
+                    <p className="text-sm text-blue-100">ARR (Receita Anual)</p>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 p-5 text-white shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-white/20">
+                    <CreditCard className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold">{saasMetrics.activeSubscriptions}</p>
+                    <p className="text-sm text-purple-100">Assinaturas Ativas</p>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 p-5 text-white shadow-lg">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-white/20">
+                    <Sparkles className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold">{saasMetrics.trialsActive}</p>
+                    <p className="text-sm text-amber-100">Trials Ativos</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Growth & Status Cards */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {/* Crescimento */}
+              <div className="rounded-xl bg-white p-6 shadow-sm border border-slate-100">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-blue-600" />
+                  Crescimento
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">Este mês</span>
+                    <span className="text-xl font-bold text-slate-900">+{saasMetrics.newOrgsThisMonth}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">Mês anterior</span>
+                    <span className="text-lg text-slate-700">{saasMetrics.newOrgsLastMonth}</span>
+                  </div>
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-600">Taxa de crescimento</span>
+                      <span className={`text-lg font-bold ${saasMetrics.growthRate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {saasMetrics.growthRate >= 0 ? '+' : ''}{saasMetrics.growthRate.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Distribuição por Plano */}
+              <div className="rounded-xl bg-white p-6 shadow-sm border border-slate-100">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-purple-600" />
+                  Distribuição por Plano
+                </h3>
+                <div className="space-y-3">
+                  {saasMetrics.planDistribution.map((plan) => (
+                    <div key={plan.plan}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium text-slate-700">{plan.plan}</span>
+                        <span className="text-sm text-slate-500">{plan.count} ({plan.percentage.toFixed(1)}%)</span>
+                      </div>
+                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${
+                            plan.plan === 'FREE' ? 'bg-slate-400' :
+                            plan.plan === 'PRO' ? 'bg-blue-500' :
+                            'bg-purple-500'
+                          }`}
+                          style={{ width: `${plan.percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status das Assinaturas */}
+              <div className="rounded-xl bg-white p-6 shadow-sm border border-slate-100">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-emerald-600" />
+                  Status das Assinaturas
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                      <span className="text-slate-600">Ativas</span>
+                    </span>
+                    <span className="font-semibold">{saasMetrics.subscriptionStatus.active}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-amber-500"></span>
+                      <span className="text-slate-600">Em trial</span>
+                    </span>
+                    <span className="font-semibold">{saasMetrics.subscriptionStatus.trialing}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                      <span className="text-slate-600">Pagamento pendente</span>
+                    </span>
+                    <span className="font-semibold">{saasMetrics.subscriptionStatus.past_due}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-slate-400"></span>
+                      <span className="text-slate-600">Canceladas</span>
+                    </span>
+                    <span className="font-semibold">{saasMetrics.subscriptionStatus.canceled}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Trial Metrics */}
+            <div className="rounded-xl bg-white p-6 shadow-sm border border-slate-100">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-amber-600" />
+                Métricas de Trial
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center p-4 rounded-lg bg-amber-50">
+                  <p className="text-3xl font-bold text-amber-600">{saasMetrics.trialMetrics.active}</p>
+                  <p className="text-sm text-amber-700">Trials Ativos</p>
+                </div>
+                <div className="text-center p-4 rounded-lg bg-red-50">
+                  <p className="text-3xl font-bold text-red-600">{saasMetrics.trialMetrics.expiringSoon}</p>
+                  <p className="text-sm text-red-700">Expirando em 3 dias</p>
+                  {saasMetrics.trialMetrics.expiringSoon > 0 && (
+                    <div className="mt-2 flex items-center justify-center gap-1 text-xs text-red-600">
+                      <AlertTriangle className="h-3 w-3" />
+                      Requer atenção!
+                    </div>
+                  )}
+                </div>
+                <div className="text-center p-4 rounded-lg bg-green-50">
+                  <p className="text-3xl font-bold text-green-600">{saasMetrics.trialMetrics.convertedThisMonth}</p>
+                  <p className="text-sm text-green-700">Conversões este mês</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Organizações Recentes */}
+            <div className="rounded-xl bg-white shadow-sm border border-slate-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-slate-100">
+                <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+                  <Building className="h-5 w-5 text-blue-600" />
+                  Organizações Recentes
+                </h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-slate-50 border-b border-slate-100">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Organização</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Plano</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Membros</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Aeronaves</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Criado em</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500">Trial</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {saasMetrics.recentOrganizations.map((org) => (
+                      <tr key={org.id} className="hover:bg-slate-50">
+                        <td className="px-4 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-bold text-white">
+                              {org.name.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="font-medium text-slate-900">{org.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            org.plan === 'PRO' ? 'bg-blue-100 text-blue-800' :
+                            org.plan === 'ENTERPRISE' ? 'bg-purple-100 text-purple-800' :
+                            'bg-slate-100 text-slate-800'
+                          }`}>
+                            {org.plan}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            org.subscriptionStatus === 'active' ? 'bg-green-100 text-green-800' :
+                            org.subscriptionStatus === 'trialing' ? 'bg-amber-100 text-amber-800' :
+                            org.subscriptionStatus === 'past_due' ? 'bg-red-100 text-red-800' :
+                            'bg-slate-100 text-slate-800'
+                          }`}>
+                            {org.subscriptionStatus || 'Sem assinatura'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-slate-600">{org.memberCount}</td>
+                        <td className="px-4 py-4 text-sm text-slate-600">{org.aircraftCount}</td>
+                        <td className="px-4 py-4 text-sm text-slate-500">
+                          {new Date(org.createdAt).toLocaleDateString("pt-BR")}
+                        </td>
+                        <td className="px-4 py-4">
+                          {org.trialEndsAt ? (
+                            <span className={`text-sm ${
+                              new Date(org.trialEndsAt) < new Date() ? 'text-red-600' : 'text-amber-600'
+                            }`}>
+                              {new Date(org.trialEndsAt) < new Date() ? 'Expirado' : 
+                                `${Math.ceil((new Date(org.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} dias`
+                              }
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {saasMetrics.recentOrganizations.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
+                          Nenhuma organização cadastrada
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Users Tab */}
         {activeTab === "users" && (

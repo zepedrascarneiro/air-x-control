@@ -164,6 +164,17 @@ export function OnboardingForm({ userName }: OnboardingFormProps) {
           Criar Nova Conta
         </h2>
 
+        {/* Trial Banner */}
+        <div className="bg-gradient-to-r from-blue-600/30 to-indigo-600/30 border border-blue-500/30 rounded-xl p-4">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🎉</span>
+            <div>
+              <p className="text-white font-medium">7 dias de PRO grátis!</p>
+              <p className="text-blue-200 text-sm">Acesso completo a todas as funcionalidades</p>
+            </div>
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-blue-200 mb-2">
             Nome da Conta / Aeronave
