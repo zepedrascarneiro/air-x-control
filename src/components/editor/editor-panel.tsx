@@ -937,8 +937,8 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h3 className="text-xl font-semibold">Voos cadastrados</h3>
-          <p className="text-sm text-air-blue-200">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">Voos cadastrados</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
             {canManage
               ? "Selecione um voo para corrigir dados ou crie um novo registro."
               : "Consulte voos registrados pela equipe de operações."}
@@ -955,7 +955,7 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                 debouncedFlightFilter(value);
               }}
               placeholder="Filtrar por origem, destino ou piloto"
-              className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white placeholder:text-air-blue-200 focus:border-air-gold-300 focus:outline-none sm:w-72"
+              className="w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none sm:w-72"
               aria-label="Filtrar voos"
             />
             {filterQuery ? (
@@ -965,7 +965,7 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                   setFilterQuery("");
                   debouncedFlightFilter("");
                 }}
-                className="rounded-md border border-white/20 bg-white/10 px-2 py-1 text-xs text-white hover:border-white/40 hover:bg-white/20"
+                className="rounded-md border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-slate-700 px-2 py-1 text-xs text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-600"
               >
                 Limpar
               </button>
@@ -975,20 +975,20 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
             <button
               type="button"
               onClick={handleCreate}
-              className="rounded-lg bg-air-gold-400 px-4 py-2 text-sm font-semibold text-air-blue-900 transition hover:bg-air-gold-300"
+              className="rounded-lg bg-blue-600 dark:bg-amber-500 px-4 py-2 text-sm font-semibold text-white dark:text-slate-900 transition hover:bg-blue-700 dark:hover:bg-amber-400"
             >
               + Novo voo
             </button>
           ) : (
-            <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-wide text-air-blue-200">
+            <span className="rounded-full border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-slate-700 px-4 py-2 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-300">
               modo leitura
             </span>
           )}
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/10">
-        <div className="flex items-center justify-between gap-3 px-4 py-3 text-xs uppercase tracking-wide text-air-blue-200">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-700/50">
+        <div className="flex items-center justify-between gap-3 px-4 py-3 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-300">
           <span>
             {filterQuery
               ? `Mostrando ${filteredFlights.length} de ${flights.length} voos`
@@ -996,11 +996,11 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
           </span>
           <span>Resultados limitados aos 10 mais recentes</span>
         </div>
-        <div className="grid grid-cols-1 divide-y divide-white/5">
+        <div className="grid grid-cols-1 divide-y divide-slate-200 dark:divide-white/5">
           {loading ? (
-            <div className="p-4 text-sm text-air-blue-200">Carregando voos...</div>
+            <div className="p-4 text-sm text-slate-500 dark:text-slate-400">Carregando voos...</div>
           ) : filteredFlights.length === 0 ? (
-            <div className="p-4 text-sm text-air-blue-200">
+            <div className="p-4 text-sm text-slate-500 dark:text-slate-400">
               {filterQuery
                 ? "Nenhum voo corresponde ao filtro aplicado."
                 : "Nenhum voo cadastrado ainda."}
@@ -1009,19 +1009,19 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
             filteredFlights.slice(0, 10).map((flight) => (
               <div key={flight.id} className="flex flex-col gap-2 p-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="text-sm uppercase tracking-wide text-air-blue-200">
+                  <p className="text-sm uppercase tracking-wide text-slate-500 dark:text-slate-400">
                     {formatDate(flight.flightDate)}
                   </p>
-                  <p className="text-base font-semibold">
+                  <p className="text-base font-semibold text-slate-900 dark:text-white">
                     {flight.origin} → {flight.destination}
                   </p>
-                  <p className="text-xs text-air-blue-200">
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
                     Piloto: {flight.pilot?.name ?? "—"} · Aeronave: {flight.aircraft?.tailNumber ?? "—"}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   {flight.totalCost ? (
-                    <span className="text-sm text-air-gold-200">
+                    <span className="text-sm text-blue-600 dark:text-amber-400 font-medium">
                       {numberFormatter.format(Number(flight.totalCost))}
                     </span>
                   ) : null}
@@ -1029,7 +1029,7 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                     <button
                       type="button"
                       onClick={() => handleEdit(flight)}
-                      className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white transition hover:border-white/60 hover:bg-white/10"
+                      className="rounded-lg border border-slate-300 dark:border-white/30 bg-white dark:bg-transparent px-3 py-2 text-sm font-semibold text-slate-700 dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       Editar
                     </button>
@@ -1044,24 +1044,24 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
       {isFormOpen ? (
         <form
           onSubmit={onSubmit}
-          className="rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur"
+          className="rounded-2xl border border-slate-200 dark:border-white/15 bg-white dark:bg-slate-800 p-6 shadow-lg"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h4 className="text-lg font-semibold">
+            <h4 className="text-lg font-semibold text-slate-900 dark:text-white">
               {editingFlight ? "Editar voo" : "Novo voo"}
             </h4>
             <div className="flex items-center gap-3 text-sm">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:border-white/60 hover:bg-white/10"
+                className="rounded-lg border border-slate-300 dark:border-white/30 px-4 py-2 text-slate-700 dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-lg bg-air-gold-400 px-4 py-2 font-semibold text-air-blue-900 transition hover:bg-air-gold-300 disabled:cursor-not-allowed disabled:opacity-70"
+                className="rounded-lg bg-blue-600 dark:bg-amber-500 px-4 py-2 font-semibold text-white dark:text-slate-900 transition hover:bg-blue-700 dark:hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? "Salvando..." : "Salvar"}
               </button>
@@ -1070,38 +1070,38 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
 
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="aircraftId">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="aircraftId">
                 Aeronave
               </label>
               <select
                 id="aircraftId"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("aircraftId", {
                   setValueAs: optionalStringValue,
                 })}
               >
                 <option value="">Selecionar</option>
                 {metadata.aircraft.map((item) => (
-                  <option key={item.id} value={item.id} className="text-air-blue-900">
+                  <option key={item.id} value={item.id}>
                     {item.tailNumber} · {item.model ?? ""}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="pilotId">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="pilotId">
                 Piloto
               </label>
               <select
                 id="pilotId"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("pilotId", {
                   setValueAs: optionalStringValue,
                 })}
               >
                 <option value="">Selecionar</option>
                 {metadata.users.map((user) => (
-                  <option key={user.id} value={user.id} className="text-air-blue-900">
+                  <option key={user.id} value={user.id}>
                     {user.name} ({user.role})
                   </option>
                 ))}
@@ -1109,46 +1109,46 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
             </div>
 
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="flightDate">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="flightDate">
                 Data e horário
               </label>
               <input
                 id="flightDate"
                 type="datetime-local"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("flightDate")}
               />
               {errors.flightDate ? (
-                <p className="mt-1 text-xs text-red-200">{errors.flightDate.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.flightDate.message}</p>
               ) : null}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-air-blue-100" htmlFor="origin">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="origin">
                   Origem
                 </label>
                 <input
                   id="origin"
-                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                   placeholder="SBSP"
                   {...register("origin")}
                 />
                 {errors.origin ? (
-                  <p className="mt-1 text-xs text-red-200">{errors.origin.message}</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.origin.message}</p>
                 ) : null}
               </div>
               <div>
-                <label className="text-sm font-medium text-air-blue-100" htmlFor="destination">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="destination">
                   Destino
                 </label>
                 <input
                   id="destination"
-                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                   placeholder="SBRJ"
                   {...register("destination")}
                 />
                 {errors.destination ? (
-                  <p className="mt-1 text-xs text-red-200">{errors.destination.message}</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.destination.message}</p>
                 ) : null}
               </div>
             </div>
@@ -1159,26 +1159,26 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                 ["totalCost", "Custo hora voada"],
               ] as const).map(([field, label]) => (
                 <div key={field}>
-                  <label className="text-sm font-medium text-air-blue-100" htmlFor={field}>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor={field}>
                     {label}
                   </label>
                   <input
                     id={field}
                     type="number"
                     step="0.01"
-                    className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                    className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                     {...register(field, {
                       setValueAs: optionalNumberValue,
                     })}
                   />
                   {errors[field] ? (
-                    <p className="mt-1 text-xs text-red-200">{errors[field]?.message}</p>
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors[field]?.message}</p>
                   ) : null}
                 </div>
               ))}
               
               <div>
-                <label className="text-sm font-medium text-air-blue-100" htmlFor="durationHours">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="durationHours">
                   Tempo Total Operacional (h)
                 </label>
                 <div className="mt-2 space-y-2">
@@ -1186,20 +1186,20 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                     id="durationHours"
                     type="number"
                     step="0.01"
-                    className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                    className="w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                     {...register("durationHours", {
                       setValueAs: optionalNumberValue,
                     })}
                     placeholder="Ex: 2.5"
                   />
-                  <div className="rounded-md bg-air-blue-900/30 p-2">
-                    <p className="text-xs text-air-blue-200 mb-1">Conversor Minutos → Decimais:</p>
+                  <div className="rounded-md bg-slate-100 dark:bg-slate-900/30 p-2">
+                    <p className="text-xs text-slate-600 dark:text-slate-300 mb-1">Conversor Minutos → Decimais:</p>
                     <div className="flex gap-2 items-center">
                       <input
                         type="number"
                         placeholder="minutos"
                         min="0"
-                        className="flex-1 rounded border border-white/10 bg-white/5 px-2 py-1 text-sm text-white placeholder:text-air-blue-300 focus:border-air-gold-300 focus:outline-none"
+                        className="flex-1 rounded border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 px-2 py-1 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                         onChange={(e) => {
                           const minutes = parseFloat(e.target.value);
                           if (!isNaN(minutes) && minutes >= 0) {
@@ -1212,12 +1212,12 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                           }
                         }}
                       />
-                      <span className="text-xs text-air-blue-200 whitespace-nowrap">= decimais</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">= decimais</span>
                     </div>
                   </div>
                 </div>
                 {errors.durationHours ? (
-                  <p className="mt-1 text-xs text-red-200">{errors.durationHours.message}</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.durationHours.message}</p>
                 ) : null}
               </div>
             </div>
@@ -1229,20 +1229,20 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                 ["travelExpenses", "Despesas viagem"],
               ] as const).map(([field, label]) => (
                 <div key={field}>
-                  <label className="text-sm font-medium text-air-blue-100" htmlFor={field}>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor={field}>
                     {label}
                   </label>
                   <input
                     id={field}
                     type="number"
                     step="0.01"
-                    className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                    className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                     {...register(field, {
                       setValueAs: optionalNumberValue,
                     })}
                   />
                   {errors[field] ? (
-                    <p className="mt-1 text-xs text-red-200">{errors[field]?.message}</p>
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors[field]?.message}</p>
                   ) : null}
                 </div>
               ))}
@@ -1250,109 +1250,109 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
 
             <div className="grid grid-cols-3 gap-4 md:col-span-2">
               <div>
-                <label className="text-sm font-medium text-air-blue-100" htmlFor="baseAbsorption">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="baseAbsorption">
                   Horário de Apresentação
                 </label>
                 <input
                   id="baseAbsorption"
                   type="time"
-                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                   {...register("baseAbsorption", {
                     setValueAs: optionalStringValue,
                   })}
                 />
                 {errors.baseAbsorption ? (
-                  <p className="mt-1 text-xs text-red-200">{errors.baseAbsorption?.message}</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.baseAbsorption?.message}</p>
                 ) : null}
               </div>
               <div>
-                <label className="text-sm font-medium text-air-blue-100" htmlFor="baseFixedAbsorption">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="baseFixedAbsorption">
                   Horário de Corte de Motor
                 </label>
                 <input
                   id="baseFixedAbsorption"
                   type="time"
-                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                   {...register("baseFixedAbsorption", {
                     setValueAs: optionalStringValue,
                   })}
                 />
                 {errors.baseFixedAbsorption ? (
-                  <p className="mt-1 text-xs text-red-200">{errors.baseFixedAbsorption?.message}</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.baseFixedAbsorption?.message}</p>
                 ) : null}
               </div>
               <div>
-                <label className="text-sm font-medium text-air-blue-100" htmlFor="maintenanceExpenses">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="maintenanceExpenses">
                   Despesas manutenção
                 </label>
                 <input
                   id="maintenanceExpenses"
                   type="number"
                   step="0.01"
-                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                   {...register("maintenanceExpenses", {
                     setValueAs: optionalNumberValue,
                   })}
                 />
                 {errors.maintenanceExpenses ? (
-                  <p className="mt-1 text-xs text-red-200">{errors.maintenanceExpenses?.message}</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.maintenanceExpenses?.message}</p>
                 ) : null}
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4 md:col-span-2">
               <div>
-                <label className="text-sm font-medium text-air-blue-100" htmlFor="usedById">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="usedById">
                   Utilizado por
                 </label>
                 <select
                   id="usedById"
-                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                   {...register("usedById", {
                     setValueAs: optionalStringValue,
                   })}
                 >
                   <option value="">Selecionar</option>
                   {metadata.users.map((user) => (
-                    <option key={user.id} value={user.id} className="text-air-blue-900">
+                    <option key={user.id} value={user.id}>
                       {user.name} ({user.role})
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-air-blue-100" htmlFor="baseTax">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="baseTax">
                   Número de Passageiro
                 </label>
                 <input
                   id="baseTax"
                   type="number"
                   min="0"
-                  className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white focus:border-air-gold-300 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-3 py-2 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                   {...register("baseTax", {
                     setValueAs: optionalNumberValue,
                   })}
                 />
                 {errors.baseTax ? (
-                  <p className="mt-1 text-xs text-red-200">{errors.baseTax?.message}</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.baseTax?.message}</p>
                 ) : null}
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="payerId">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="payerId">
                 Responsável financeiro
               </label>
               <select
                 id="payerId"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("payerId", {
                   setValueAs: optionalStringValue,
                 })}
               >
                 <option value="">Selecionar</option>
                 {metadata.users.map((user) => (
-                  <option key={user.id} value={user.id} className="text-air-blue-900">
+                  <option key={user.id} value={user.id}>
                     {user.name} ({user.role})
                   </option>
                 ))}
@@ -1360,13 +1360,13 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="notes">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="notes">
                 Notas
               </label>
               <textarea
                 id="notes"
                 rows={3}
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 placeholder="Observações gerais do voo"
                 {...register("notes", {
                   setValueAs: optionalStringValue,
@@ -1375,14 +1375,14 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="attachment">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="attachment">
                 Anexo (arquivo)
               </label>
               <div className="mt-2 space-y-2">
                 <input
                   id="attachment"
                   type="file"
-                  className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white file:mr-4 file:rounded file:border-0 file:bg-air-gold-400 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-air-blue-900 hover:file:bg-air-gold-300"
+                  className="w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white file:mr-4 file:rounded file:border-0 file:bg-blue-600 dark:file:bg-amber-500 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white dark:file:text-slate-900 hover:file:bg-blue-700 dark:hover:file:bg-amber-400"
                   accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt,.zip"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -1405,13 +1405,13 @@ function FlightManager({ flights, metadata, loading, onRefresh, canManage }: Fli
                     setValueAs: optionalStringValue,
                   })}
                 />
-                <p className="text-xs text-air-blue-300">Formatos aceitos: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, TXT, ZIP</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Formatos aceitos: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG, TXT, ZIP</p>
               </div>
             </div>
           </div>
 
           {serverError ? (
-            <p className="mt-4 text-sm text-red-200">{serverError}</p>
+            <p className="mt-4 text-sm text-red-600 dark:text-red-300">{serverError}</p>
           ) : null}
         </form>
       ) : null}
@@ -1599,10 +1599,10 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h3 className="text-xl font-semibold">
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
             {expenseType === "fixed" ? "Despesas Fixas" : expenseType === "variable" ? "Despesas Variáveis" : "Despesas recentes"}
           </h3>
-          <p className="text-sm text-air-blue-200">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
             {canManage
               ? "Centralize os lançamentos financeiros e edite quando necessário."
               : "Acompanhe lançamentos financeiros registrados pelos administradores."}
@@ -1619,7 +1619,7 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
                 debouncedExpenseFilter(value);
               }}
               placeholder="Filtrar por categoria, responsável ou voo"
-              className="w-full rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white placeholder:text-air-blue-200 focus:border-air-gold-300 focus:outline-none sm:w-72"
+              className="w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none sm:w-72"
               aria-label="Filtrar despesas"
             />
             {filterQuery ? (
@@ -1629,7 +1629,7 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
                   setFilterQuery("");
                   debouncedExpenseFilter("");
                 }}
-                className="rounded-md border border-white/20 bg-white/10 px-2 py-1 text-xs text-white hover:border-white/40 hover:bg-white/20"
+                className="rounded-md border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-slate-700 px-2 py-1 text-xs text-slate-700 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-600"
               >
                 Limpar
               </button>
@@ -1639,20 +1639,20 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
             <button
               type="button"
               onClick={handleCreate}
-              className="rounded-lg bg-air-gold-400 px-4 py-2 text-sm font-semibold text-air-blue-900 transition hover:bg-air-gold-300"
+              className="rounded-lg bg-blue-600 dark:bg-amber-500 px-4 py-2 text-sm font-semibold text-white dark:text-slate-900 transition hover:bg-blue-700 dark:hover:bg-amber-400"
             >
               + Nova despesa
             </button>
           ) : (
-            <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs uppercase tracking-wide text-air-blue-200">
+            <span className="rounded-full border border-slate-300 dark:border-white/20 bg-slate-100 dark:bg-slate-700 px-4 py-2 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-300">
               modo leitura
             </span>
           )}
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/10">
-        <div className="flex items-center justify-between gap-3 px-4 py-3 text-xs uppercase tracking-wide text-air-blue-200">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-700/50">
+        <div className="flex items-center justify-between gap-3 px-4 py-3 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-300">
           <span>
             {filterQuery
               ? `Mostrando ${filteredExpenses.length} de ${expenses.length} despesas`
@@ -1660,11 +1660,11 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
           </span>
           <span>Resultados limitados às 10 mais recentes</span>
         </div>
-        <div className="grid grid-cols-1 divide-y divide-white/5">
+        <div className="grid grid-cols-1 divide-y divide-slate-200 dark:divide-white/5">
           {loading ? (
-            <div className="p-4 text-sm text-air-blue-200">Carregando despesas...</div>
+            <div className="p-4 text-sm text-slate-500 dark:text-slate-400">Carregando despesas...</div>
           ) : filteredExpenses.length === 0 ? (
-            <div className="p-4 text-sm text-air-blue-200">
+            <div className="p-4 text-sm text-slate-500 dark:text-slate-400">
               {filterQuery
                 ? "Nenhuma despesa corresponde ao filtro aplicado."
                 : "Nenhuma despesa lançada."}
@@ -1674,17 +1674,17 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
               <div key={expense.id} className="flex flex-col gap-2 p-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm uppercase tracking-wide text-air-blue-200">
+                    <p className="text-sm uppercase tracking-wide text-slate-500 dark:text-slate-400">
                       {formatDate(expense.expenseDate)}
                     </p>
                     {expense.receipt ? (
-                      <span className="inline-flex items-center rounded-full bg-air-gold-400/20 px-2 py-1 text-xs font-semibold text-air-gold-200">
+                      <span className="inline-flex items-center rounded-full bg-blue-100 dark:bg-amber-500/20 px-2 py-1 text-xs font-semibold text-blue-700 dark:text-amber-300">
                         📎 Comprovante
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-base font-semibold">{expense.category}</p>
-                  <p className="text-xs text-air-blue-200">
+                  <p className="text-base font-semibold text-slate-900 dark:text-white">{expense.category}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
                     Responsável: {expense.paidBy?.name ?? "—"}
                     {expense.flight
                       ? ` · Voo ${expense.flight.origin} → ${expense.flight.destination}`
@@ -1692,14 +1692,14 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-air-gold-200">
+                  <span className="text-sm text-blue-600 dark:text-amber-400 font-medium">
                     {numberFormatter.format(Number(expense.amount))}
                   </span>
                   {canManage ? (
                     <button
                       type="button"
                       onClick={() => handleEdit(expense)}
-                      className="rounded-lg border border-white/30 px-3 py-2 text-sm font-semibold text-white transition hover:border-white/60 hover:bg-white/10"
+                      className="rounded-lg border border-slate-300 dark:border-white/30 bg-white dark:bg-transparent px-3 py-2 text-sm font-semibold text-slate-700 dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10"
                     >
                       Editar
                     </button>
@@ -1714,24 +1714,24 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
       {isFormOpen ? (
         <form
           onSubmit={onSubmit}
-          className="rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur"
+          className="rounded-2xl border border-slate-200 dark:border-white/15 bg-white dark:bg-slate-800 p-6 shadow-lg"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h4 className="text-lg font-semibold">
+            <h4 className="text-lg font-semibold text-slate-900 dark:text-white">
               {editingExpense ? "Editar despesa" : "Nova despesa"}
             </h4>
             <div className="flex items-center gap-3 text-sm">
               <button
                 type="button"
                 onClick={handleCancel}
-                className="rounded-lg border border-white/30 px-4 py-2 text-white transition hover:border-white/60 hover:bg-white/10"
+                className="rounded-lg border border-slate-300 dark:border-white/30 px-4 py-2 text-slate-700 dark:text-white transition hover:bg-slate-100 dark:hover:bg-white/10"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-lg bg-air-gold-400 px-4 py-2 font-semibold text-air-blue-900 transition hover:bg-air-gold-300 disabled:cursor-not-allowed disabled:opacity-70"
+                className="rounded-lg bg-blue-600 dark:bg-amber-500 px-4 py-2 font-semibold text-white dark:text-slate-900 transition hover:bg-blue-700 dark:hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSubmitting ? "Salvando..." : "Salvar"}
               </button>
@@ -1740,65 +1740,65 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
 
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="expenseDate">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="expenseDate">
                 Data
               </label>
               <input
                 id="expenseDate"
                 type="date"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("expenseDate")}
               />
               {errors.expenseDate ? (
-                <p className="mt-1 text-xs text-red-200">{errors.expenseDate.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.expenseDate.message}</p>
               ) : null}
             </div>
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="category">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="category">
                 Categoria
               </label>
               <input
                 id="category"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 placeholder="Combustível"
                 {...register("category")}
               />
               {errors.category ? (
-                <p className="mt-1 text-xs text-red-200">{errors.category.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.category.message}</p>
               ) : null}
             </div>
 
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="amount">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="amount">
                 Valor (R$)
               </label>
               <input
                 id="amount"
                 type="number"
                 step="0.01"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("amount", {
                   setValueAs: optionalNumberValue,
                 })}
               />
               {errors.amount ? (
-                <p className="mt-1 text-xs text-red-200">{errors.amount.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.amount.message}</p>
               ) : null}
             </div>
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="paidById">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="paidById">
                 Pago por
               </label>
               <select
                 id="paidById"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("paidById", {
                   setValueAs: optionalStringValue,
                 })}
               >
                 <option value="">Selecionar</option>
                 {metadata.users.map((user) => (
-                  <option key={user.id} value={user.id} className="text-air-blue-900">
+                  <option key={user.id} value={user.id}>
                     {user.name} ({user.role})
                   </option>
                 ))}
@@ -1806,19 +1806,19 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="flightId">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="flightId">
                 Relacionar voo (opcional)
               </label>
               <select
                 id="flightId"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("flightId", {
                   setValueAs: optionalStringValue,
                 })}
               >
                 <option value="">Sem vínculo</option>
                 {flights.map((flight) => (
-                  <option key={flight.id} value={flight.id} className="text-air-blue-900">
+                  <option key={flight.id} value={flight.id}>
                     {formatDate(flight.flightDate)} · {flight.origin} → {flight.destination}
                   </option>
                 ))}
@@ -1826,13 +1826,13 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="notes">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="notes">
                 Notas
               </label>
               <textarea
                 id="notes"
                 rows={3}
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 placeholder="Detalhes adicionais da despesa"
                 {...register("notes", {
                   setValueAs: optionalStringValue,
@@ -1841,26 +1841,26 @@ function ExpenseManager({ expenses, flights, metadata, loading, onRefresh, canMa
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="receipt">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-200" htmlFor="receipt">
                 Comprovante
               </label>
               <input
                 id="receipt"
                 type="file"
                 accept="image/*,.pdf"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none"
                 {...register("receipt", {
                   setValueAs: optionalStringValue,
                 })}
               />
-              <p className="mt-1 text-xs text-air-blue-200">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 Aceita: imagens (PNG, JPG, JPEG) e PDF
               </p>
             </div>
           </div>
 
           {serverError ? (
-            <p className="mt-4 text-sm text-red-200">{serverError}</p>
+            <p className="mt-4 text-sm text-red-600 dark:text-red-300">{serverError}</p>
           ) : null}
         </form>
       ) : null}
