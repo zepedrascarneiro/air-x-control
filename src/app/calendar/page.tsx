@@ -523,12 +523,14 @@ export default function CalendarPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Aeronave *</label>
+                  <label htmlFor="aircraft-select" className="block text-sm font-medium text-slate-700 mb-1">Aeronave *</label>
                   <select
+                    id="aircraft-select"
                     required
                     value={formData.aircraftId}
                     onChange={(e) => setFormData({ ...formData, aircraftId: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500"
+                    aria-label="Selecionar aeronave"
                   >
                     {aircraft.map((a) => (
                       <option key={a.id} value={a.id}>{a.tailNumber} - {a.model}</option>
@@ -537,11 +539,13 @@ export default function CalendarPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Propósito</label>
+                  <label htmlFor="purpose-select" className="block text-sm font-medium text-slate-700 mb-1">Propósito</label>
                   <select
+                    id="purpose-select"
                     value={formData.purpose}
                     onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500"
+                    aria-label="Selecionar propósito da reserva"
                   >
                     {PURPOSES.map((p) => (
                       <option key={p} value={p}>{p}</option>
@@ -552,54 +556,64 @@ export default function CalendarPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Data Início *</label>
+                  <label htmlFor="start-date" className="block text-sm font-medium text-slate-700 mb-1">Data Início *</label>
                   <input
+                    id="start-date"
                     type="date"
                     required
                     value={formData.startDate}
                     onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500"
+                    aria-label="Data de início da reserva"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Hora Início</label>
+                  <label htmlFor="start-time" className="block text-sm font-medium text-slate-700 mb-1">Hora Início</label>
                   <input
+                    id="start-time"
                     type="time"
                     value={formData.startTime}
                     onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500"
+                    aria-label="Hora de início da reserva"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Data Fim *</label>
+                  <label htmlFor="end-date" className="block text-sm font-medium text-slate-700 mb-1">Data Fim *</label>
                   <input
+                    id="end-date"
                     type="date"
                     required
                     value={formData.endDate}
                     onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500"
+                    aria-label="Data de fim da reserva"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Hora Fim</label>
+                  <label htmlFor="end-time" className="block text-sm font-medium text-slate-700 mb-1">Hora Fim</label>
                   <input
+                    id="end-time"
                     type="time"
                     value={formData.endTime}
                     onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500"
+                    aria-label="Hora de fim da reserva"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Piloto</label>
+                <label htmlFor="pilot-select" className="block text-sm font-medium text-slate-700 mb-1">Piloto</label>
                 <select
+                  id="pilot-select"
                   value={formData.pilotId}
                   onChange={(e) => setFormData({ ...formData, pilotId: e.target.value })}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500"
+                  aria-label="Selecionar piloto"
                 >
                   <option value="">Eu mesmo</option>
                   {users.map((u) => (

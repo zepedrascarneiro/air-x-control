@@ -580,18 +580,30 @@ export default async function DashboardPage({
                   Ações Rápidas
                 </h2>
                 <div className="space-y-2">
-                  <button className="w-full flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl text-blue-600 transition-colors">
+                  <a 
+                    href="#editor-panel"
+                    className="w-full flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl text-blue-600 transition-colors cursor-pointer"
+                  >
                     <Plus className="w-5 h-5" />
                     <span className="font-medium">Registrar Novo Voo</span>
-                  </button>
-                  <button className="w-full flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-xl text-green-600 transition-colors">
+                    <ArrowRight className="w-4 h-4 ml-auto opacity-50" />
+                  </a>
+                  <a 
+                    href="#editor-panel"
+                    className="w-full flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-xl text-green-600 transition-colors cursor-pointer"
+                  >
                     <Plus className="w-5 h-5" />
                     <span className="font-medium">Adicionar Despesa</span>
-                  </button>
-                  <button className="w-full flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-xl text-purple-600 transition-colors">
+                    <ArrowRight className="w-4 h-4 ml-auto opacity-50" />
+                  </a>
+                  <a 
+                    href="#editor-panel"
+                    className="w-full flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 rounded-xl text-purple-600 transition-colors cursor-pointer"
+                  >
                     <Plus className="w-5 h-5" />
                     <span className="font-medium">Nova Aeronave</span>
-                  </button>
+                    <ArrowRight className="w-4 h-4 ml-auto opacity-50" />
+                  </a>
                 </div>
               </div>
             )}
@@ -600,7 +612,7 @@ export default async function DashboardPage({
 
         {/* Editor Panel */}
         {canManage && (
-          <section className="mt-8">
+          <section id="editor-panel" className="mt-8 scroll-mt-20">
             <EditorPanel canManage={canManage} />
           </section>
         )}
