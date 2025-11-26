@@ -20,6 +20,14 @@ model Organization {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Stripe billing
+  stripeCustomerId       String?   @unique  // ID do customer no Stripe
+  stripeSubscriptionId   String?   @unique  // ID da subscription ativa
+  stripePriceId          String?            // ID do preço/plano atual
+  subscriptionStatus     String?            // active, canceled, past_due, etc.
+  subscriptionPeriodEnd  DateTime?          // Fim do período atual
+  trialEndsAt            DateTime?          // Fim do período de trial
+
   // Relacionamentos
   members     OrganizationMember[]
   aircraft    Aircraft[]

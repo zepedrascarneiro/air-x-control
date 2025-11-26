@@ -20,6 +20,9 @@ import {
   Crown,
   Eye,
   Pencil,
+  CreditCard,
+  Sparkles,
+  ExternalLink,
 } from "lucide-react";
 
 interface Member {
@@ -43,6 +46,8 @@ interface Organization {
   shareCode: string;
   plan: string;
   status: string;
+  subscriptionStatus?: string;
+  subscriptionPeriodEnd?: string;
 }
 
 const roleLabels: Record<string, string> = {
@@ -477,22 +482,94 @@ export default function SettingsPage() {
               <p className="font-semibold text-slate-900">{organization.name}</p>
             </div>
             <div className="bg-slate-50 rounded-xl p-4">
-              <p className="text-sm text-slate-500 mb-1">Plano</p>
-              <p className="font-semibold text-slate-900 capitalize">
-                {organization.plan === "FREE" ? "Gratuito" : organization.plan}
-              </p>
-            </div>
-            <div className="bg-slate-50 rounded-xl p-4">
               <p className="text-sm text-slate-500 mb-1">Slug</p>
               <p className="font-semibold text-slate-900">{organization.slug}</p>
             </div>
-            <div className="bg-slate-50 rounded-xl p-4">
-              <p className="text-sm text-slate-500 mb-1">Status</p>
-              <p className="font-semibold text-green-600">
-                {organization.status === "ACTIVE" ? "Ativo" : organization.status}
-              </p>
+          </div>
+        </section>
+
+        {/* Plano e Assinatura */}
+        <section className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <CreditCard className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">Plano e Assinatura</h2>
+                <p className="text-sm text-blue-100">
+                  Gerencie sua assinatura
+                </p>
+              </div>
             </div>
           </div>
+
+          <div className="bg-white/10 rounded-xl p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-blue-100 mb-1">Plano atual</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl font-bold">
+                    {organization.plan === "FREE" ? "Essencial (Grátis)" : 
+                     organization.plan === "PRO" ? "Profissional" : 
+                     organization.plan === "ENTERPRISE" ? "Enterprise" : organization.plan}
+                  </span>
+                  {organization.plan !== "FREE" && (
+                    <span className="px-2 py-0.5 bg-green-500 text-white text-xs font-medium rounded-full">
+                      Ativo
+                    </span>
+                  )}
+                </div>
+              </div>
+              {organization.plan !== "FREE" && organization.subscriptionPeriodEnd && (
+                <div className="text-right">
+                  <p className="text-sm text-blue-100">Próxima cobrança</p>
+                  <p className="font-semibold">
+                    {new Date(organization.subscriptionPeriodEnd).toLocaleDateString("pt-BR")}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            {organization.plan === "FREE" ? (
+              <Link
+                href="/pricing"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors"
+              >
+                <Sparkles className="w-5 h-5" />
+                Fazer Upgrade
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/pricing"
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-white/20 hover:bg-white/30 font-medium rounded-xl transition-colors"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Mudar Plano
+                </Link>
+                <button
+                  onClick={async () => {
+                    const res = await fetch("/api/stripe/portal", { method: "POST" });
+                    const data = await res.json();
+                    if (data.url) window.location.href = data.url;
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                  Gerenciar Assinatura
+                </button>
+              </>
+            )}
+          </div>
+
+          {organization.plan === "FREE" && (
+            <p className="mt-4 text-sm text-blue-100 text-center">
+              Upgrade para desbloquear mais aeronaves, usuários ilimitados e relatórios avançados.
+            </p>
+          )}
         </section>
       </main>
     </div>
