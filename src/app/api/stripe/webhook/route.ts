@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe, PLANS, PlanType } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
+import { 
+  sendPaymentConfirmedEmail, 
+  sendPaymentFailedEmail,
+  sendSubscriptionCanceledEmail 
+} from '@/lib/email';
 import Stripe from 'stripe';
 
 // Desabilita o body parser padrão do Next.js
@@ -175,12 +180,21 @@ async function updateOrganizationSubscription(
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const org = await prisma.organization.findFirst({
     where: { stripeSubscriptionId: subscription.id },
+    include: {
+      members: {
+        where: { role: 'OWNER' },
+        include: { user: true },
+        take: 1,
+      },
+    },
   });
 
   if (!org) {
     console.error('[Webhook] Organization not found for deleted subscription');
     return;
   }
+
+  const previousPlan = org.plan;
 
   await prisma.organization.update({
     where: { id: org.id },
@@ -193,6 +207,24 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   });
 
   console.log('[Webhook] Subscription canceled for org:', org.id);
+
+  // Enviar email de cancelamento
+  const owner = org.members[0]?.user;
+  if (owner) {
+    const planConfig = PLANS[previousPlan as PlanType] || PLANS.PRO;
+    const subData = JSON.parse(JSON.stringify(subscription));
+    const endDate = subData.current_period_end 
+      ? new Date(subData.current_period_end * 1000).toLocaleDateString('pt-BR')
+      : new Date().toLocaleDateString('pt-BR');
+
+    await sendSubscriptionCanceledEmail(
+      owner.email,
+      owner.name,
+      planConfig.name,
+      endDate,
+      true // immediate cancellation via webhook
+    );
+  }
 }
 
 /**
@@ -206,6 +238,13 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 
   const org = await prisma.organization.findFirst({
     where: { stripeSubscriptionId: subscriptionId },
+    include: {
+      members: {
+        where: { role: 'OWNER' },
+        include: { user: true },
+        take: 1,
+      },
+    },
   });
 
   if (org) {
@@ -218,6 +257,24 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     });
 
     console.log('[Webhook] Payment succeeded for org:', org.id);
+
+    // Enviar email de confirmação de pagamento
+    const owner = org.members[0]?.user;
+    if (owner) {
+      const planConfig = PLANS[org.plan as PlanType] || PLANS.PRO;
+      const nextBilling = invoiceData.lines?.data?.[0]?.period?.end;
+      const nextBillingDate = nextBilling 
+        ? new Date(nextBilling * 1000).toLocaleDateString('pt-BR')
+        : 'N/A';
+
+      await sendPaymentConfirmedEmail(
+        owner.email,
+        owner.name,
+        planConfig.name,
+        invoiceData.amount_paid || 0,
+        nextBillingDate
+      );
+    }
   }
 }
 
@@ -232,6 +289,13 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   const org = await prisma.organization.findFirst({
     where: { stripeSubscriptionId: subscriptionId },
+    include: {
+      members: {
+        where: { role: 'OWNER' },
+        include: { user: true },
+        take: 1,
+      },
+    },
   });
 
   if (org) {
@@ -244,6 +308,11 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
     console.log('[Webhook] Payment failed for org:', org.id);
     
-    // TODO: Enviar email de notificação
+    // Enviar email de falha no pagamento
+    const owner = org.members[0]?.user;
+    if (owner) {
+      const planConfig = PLANS[org.plan as PlanType] || PLANS.PRO;
+      await sendPaymentFailedEmail(owner.email, owner.name, planConfig.name);
+    }
   }
 }
