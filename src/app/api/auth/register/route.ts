@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
+import { randomBytes } from "crypto";
 
 import {
   attachSessionCookie,
@@ -11,8 +12,14 @@ import {
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validators";
 import { createOrganization, joinOrganization } from "@/lib/organization";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
+
+// Gera token de verificação de email
+function generateVerificationToken(): string {
+  return randomBytes(32).toString("hex");
+}
 
 export async function POST(request: Request) {
   try {
@@ -39,6 +46,10 @@ export async function POST(request: Request) {
     }
 
     const hashedPassword = await hashPassword(parsed.password);
+    
+    // Gerar token de verificação de email
+    const verificationToken = generateVerificationToken();
+    const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 horas
 
     const user = await prisma.user.create({
       data: {
@@ -47,6 +58,9 @@ export async function POST(request: Request) {
         hashedPassword,
         phone: parsed.phone ?? undefined,
         role: parsed.role ?? undefined,
+        verificationToken,
+        verificationExpiry,
+        emailVerified: false,
       },
     });
 
@@ -74,6 +88,11 @@ export async function POST(request: Request) {
       { status: 201 },
     );
     attachSessionCookie(response, token);
+
+    // Enviar email de boas-vindas (async, não bloqueia a resposta)
+    sendWelcomeEmail(user.email, user.name, verificationToken).catch((err) => {
+      console.error("[Register] Erro ao enviar email de boas-vindas:", err);
+    });
 
     return response;
   } catch (error) {

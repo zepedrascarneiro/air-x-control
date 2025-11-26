@@ -55,6 +55,16 @@ model User {
   status         String     @default("ACTIVE")
   phone          String?
   ownershipPct   Decimal?   @default(0)  // Deprecado - usar OrganizationMember.ownershipPct
+  
+  // Verificação de email
+  emailVerified    Boolean   @default(false)
+  verificationToken String?  @unique
+  verificationExpiry DateTime?
+  
+  // Recuperação de senha
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+  
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 

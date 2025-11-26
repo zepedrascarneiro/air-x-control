@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -98,6 +99,14 @@ export function LoginForm() {
         {errors.password ? (
           <p className="mt-1 text-sm text-red-200">{errors.password.message}</p>
         ) : null}
+        <div className="mt-2 text-right">
+          <Link 
+            href="/forgot-password" 
+            className="text-sm text-air-gold-300 hover:text-air-gold-200 transition-colors"
+          >
+            Esqueci minha senha
+          </Link>
+        </div>
       </div>
 
       {serverError ? <p className="text-sm text-red-200">{serverError}</p> : null}
