@@ -28,6 +28,7 @@ export function generateSlug(name: string): string {
 
 /**
  * Cria uma nova organização com um código único
+ * Novas organizações começam com trial PRO de 7 dias
  */
 export async function createOrganization(name: string, ownerId: string) {
   let shareCode = generateShareCode();
@@ -47,12 +48,20 @@ export async function createOrganization(name: string, ownerId: string) {
     attempts++;
   }
   
-  // Criar organização e adicionar o dono como membro
+  // Calcular data de fim do trial (7 dias)
+  const trialDays = 7;
+  const trialEndsAt = new Date();
+  trialEndsAt.setDate(trialEndsAt.getDate() + trialDays);
+  
+  // Criar organização com trial PRO e adicionar o dono como membro
   const organization = await prisma.organization.create({
     data: {
       name,
       slug,
       shareCode,
+      plan: "PRO", // Começa com PRO durante trial
+      subscriptionStatus: "trialing",
+      trialEndsAt,
       members: {
         create: {
           userId: ownerId,
