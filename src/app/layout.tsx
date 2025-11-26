@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast-provider";
+import { MobileNav } from "@/components/mobile-nav";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 export const metadata: Metadata = {
   title: "Air X Control",
@@ -57,6 +59,8 @@ export default function RootLayout({
       </head>
       <body className="bg-background text-foreground antialiased">
         <ToastProvider>{children}</ToastProvider>
+        <MobileNav />
+        <PWAInstallPrompt />
         {/* Service Worker Registration */}
         <script
           dangerouslySetInnerHTML={{
