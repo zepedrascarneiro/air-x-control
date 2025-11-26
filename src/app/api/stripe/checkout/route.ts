@@ -128,8 +128,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: checkoutUrl });
   } catch (error) {
     console.error('[Checkout] Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      { error: 'Erro interno do servidor', details: errorMessage },
       { status: 500 }
     );
   }
