@@ -80,3 +80,4 @@ DO_API_TOKEN="<token>" DO_APP_ID="<app-id>" scripts/deploy.sh
 ---
 
 Mantemos a documentação em Markdown e atualizada junto com o código para facilitar leitura e evolução do projeto.
+
