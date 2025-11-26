@@ -33,10 +33,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { plan } = body as { plan: string };
 
-    // Valida o plano
-    if (!plan || !['PRO', 'ENTERPRISE'].includes(plan)) {
+    // ENTERPRISE não disponível até Junho 2026
+    if (plan === 'ENTERPRISE') {
       return NextResponse.json(
-        { error: 'Plano inválido. Use PRO ou ENTERPRISE.' },
+        { error: 'O plano Enterprise estará disponível em Junho de 2026. Por enquanto, assine o plano Profissional!' },
+        { status: 400 }
+      );
+    }
+
+    // Valida o plano (apenas PRO disponível)
+    if (!plan || plan !== 'PRO') {
+      return NextResponse.json(
+        { error: 'Plano inválido. Use PRO.' },
         { status: 400 }
       );
     }

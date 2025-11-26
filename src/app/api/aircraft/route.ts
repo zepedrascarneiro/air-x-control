@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
-import { getManagerUser } from "@/lib/auth";
-import { PLAN_CONFIG } from "@/lib/config";
+import { getManagerUser, getCurrentOrganization } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { aircraftSchema } from "@/lib/validators";
+import { checkPlanLimit } from "@/lib/plan-limits";
 
 export const dynamic = "force-dynamic";
 
@@ -23,21 +23,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "Acesso restrito" }, { status: 403 });
     }
 
-    const payload = await request.json();
-    const data = aircraftSchema.parse(payload);
+    // Busca a organização do usuário
+    const org = await getCurrentOrganization();
+    if (!org) {
+      return NextResponse.json({ message: "Organização não encontrada" }, { status: 404 });
+    }
 
-    const currentCount = await prisma.aircraft.count();
-    const hasReachedBaseLimit = currentCount >= PLAN_CONFIG.baseAircraftIncluded;
-
-    if (hasReachedBaseLimit && !data.confirmAddon) {
+    // Verifica limite do plano
+    const limitCheck = await checkPlanLimit(org.id, 'aircraft');
+    if (!limitCheck.allowed) {
       return NextResponse.json(
         {
-          message:
-            "Seu plano atual inclui até 2 aeronaves (R$ 397/mês). Para adicionar outra aeronave, confirme a contratação do complemento de R$ 97/mês, que permite a rotação de coproprietários.",
+          message: limitCheck.message,
+          upgradeRequired: true,
+          currentPlan: limitCheck.plan,
+          limit: limitCheck.limit,
+          currentCount: limitCheck.currentCount,
         },
         { status: 402 },
       );
     }
+
+    const payload = await request.json();
+    const data = aircraftSchema.parse(payload);
 
     const { confirmAddon, ...aircraftData } = data;
 
@@ -51,6 +59,7 @@ export async function POST(request: Request) {
         nextMaintenance: aircraftData.nextMaintenance
           ? new Date(aircraftData.nextMaintenance)
           : null,
+        organizationId: org.id,
       },
     });
 

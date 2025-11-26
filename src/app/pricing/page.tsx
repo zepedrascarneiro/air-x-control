@@ -136,8 +136,13 @@ function PricingContent() {
             </button>
           </div>
 
-          {/* ENTERPRISE */}
-          <div className="bg-gradient-to-br from-amber-600/10 to-orange-600/10 border border-amber-500/30 rounded-3xl p-8">
+          {/* ENTERPRISE - Em breve */}
+          <div className="relative bg-gradient-to-br from-amber-600/10 to-orange-600/10 border border-amber-500/30 rounded-3xl p-8 opacity-75">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold rounded-full">
+                🚀 EM BREVE
+              </span>
+            </div>
             <span className="text-sm uppercase tracking-widest text-amber-400">Enterprise</span>
             <h2 className="text-2xl font-bold text-white mt-2">Operação completa</h2>
             <div className="mt-4 mb-6">
@@ -148,14 +153,11 @@ function PricingContent() {
               <li className="flex items-center gap-2 text-slate-200"><Check className="w-4 h-4 text-amber-400" /> Aeronaves ilimitadas</li>
               <li className="flex items-center gap-2 text-slate-200"><Check className="w-4 h-4 text-amber-400" /> Módulo de Manutenção</li>
               <li className="flex items-center gap-2 text-slate-200"><Check className="w-4 h-4 text-amber-400" /> Suporte dedicado</li>
+              <li className="flex items-center gap-2 text-slate-200"><Check className="w-4 h-4 text-amber-400" /> API dedicada</li>
             </ul>
-            <button 
-              onClick={() => handleSubscribe("ENTERPRISE")}
-              disabled={loading === "ENTERPRISE"}
-              className="block w-full py-3 text-center border-2 border-amber-500/50 text-amber-400 rounded-xl font-medium disabled:opacity-50"
-            >
-              {loading === "ENTERPRISE" ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Assinar Enterprise"}
-            </button>
+            <div className="w-full py-3 text-center bg-amber-500/20 text-amber-300 rounded-xl font-medium cursor-not-allowed">
+              Disponível em Junho 2026
+            </div>
           </div>
         </div>
 

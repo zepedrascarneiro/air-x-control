@@ -12,6 +12,7 @@ export const PLANS = {
     description: 'Para começar',
     price: 0,
     priceId: null,
+    available: true,
     features: [
       '1 aeronave',
       '2 usuários',
@@ -28,6 +29,7 @@ export const PLANS = {
     description: 'Para copropriedades',
     price: 397,
     priceId: process.env.STRIPE_PRO_PRICE_ID,
+    available: true,
     features: [
       '3 aeronaves incluídas',
       'Usuários ilimitados',
@@ -43,9 +45,11 @@ export const PLANS = {
   },
   ENTERPRISE: {
     name: 'Enterprise',
-    description: 'Operação completa',
+    description: 'Operação completa (Em breve - Junho 2026)',
     price: 697,
     priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID,
+    available: false, // Disponível apenas em Junho 2026
+    availableDate: '2026-06-01',
     features: [
       'Aeronaves ilimitadas',
       'Usuários ilimitados',
