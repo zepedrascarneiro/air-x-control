@@ -251,15 +251,13 @@ export default async function DashboardPage({
                 </div>
               </div>
               
-              {canManage && (
-                <Link
-                  href="/admin"
-                  className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
-                  title="Administração"
-                >
-                  <Settings className="w-5 h-5" />
-                </Link>
-              )}
+              <Link
+                href="/settings"
+                className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                title="Configurações"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
               
               <LogoutButton 
                 label=""

@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { 
   createOrganization, 
-  getUserOrganizations,
-  getOrganizationMembers 
+  getUserOrganization,
 } from "@/lib/organization";
 
 export const dynamic = "force-dynamic";
 
-// GET - Lista organizações do usuário
+// GET - Retorna a organização atual do usuário com detalhes
 export async function GET() {
   try {
     const user = await getCurrentUser();
@@ -16,12 +16,29 @@ export async function GET() {
       return NextResponse.json({ message: "Não autenticado" }, { status: 401 });
     }
 
-    const organizations = await getUserOrganizations(user.id);
-    return NextResponse.json(organizations);
+    const organization = await getUserOrganization(user.id);
+    
+    if (!organization) {
+      return NextResponse.json({ message: "Sem organização" }, { status: 404 });
+    }
+
+    // Buscar papel do usuário na organização
+    const membership = await prisma.organizationMember.findFirst({
+      where: {
+        userId: user.id,
+        organizationId: organization.id,
+      }
+    });
+
+    return NextResponse.json({
+      organization,
+      userId: user.id,
+      role: membership?.role || "VIEWER",
+    });
   } catch (error) {
-    console.error("Error fetching organizations:", error);
+    console.error("Error fetching organization:", error);
     return NextResponse.json(
-      { message: "Erro ao buscar organizações" },
+      { message: "Erro ao buscar organização" },
       { status: 500 }
     );
   }
