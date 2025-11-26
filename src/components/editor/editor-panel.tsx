@@ -276,25 +276,25 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
   const globalError = metadataState.error || flightState.error || expenseState.error;
 
   return (
-    <section className="mb-12 rounded-3xl border border-white/10 bg-white/10 p-6 text-white shadow-xl backdrop-blur">
+    <section className="mb-12 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 p-6 text-slate-900 dark:text-white shadow-xl">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-semibold">Central do Administrador / Comandante</h2>
-          <p className="text-sm text-air-blue-100">
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Central do Administrador / Comandante</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
             {canManage
               ? "Cadastre aeronaves, atualize voos e acompanhe despesas fixas e variáveis com poucos cliques."
               : "Visualize voos, despesas e dados de frota em modo leitura."}
           </p>
         </div>
-        <div className="inline-flex overflow-hidden rounded-full border border-white/20 bg-white/10 p-1 text-sm">
+        <div className="inline-flex overflow-hidden rounded-full border border-slate-200 dark:border-white/20 bg-slate-100 dark:bg-white/10 p-1 text-sm">
           <button
             type="button"
             onClick={() => setActiveTab("aircraft")}
             className={cn(
               "rounded-full px-4 py-2 transition",
               activeTab === "aircraft"
-                ? "bg-white text-air-blue-900"
-                : "text-air-blue-100 hover:bg-white/10",
+                ? "bg-blue-600 text-white"
+                : "text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10",
             )}
           >
             Aeronaves
@@ -305,8 +305,8 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
             className={cn(
               "rounded-full px-4 py-2 transition",
               activeTab === "flights"
-                ? "bg-white text-air-blue-900"
-                : "text-air-blue-100 hover:bg-white/10",
+                ? "bg-blue-600 text-white"
+                : "text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10",
             )}
           >
             Voos
@@ -317,8 +317,8 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
             className={cn(
               "rounded-full px-4 py-2 transition",
               activeTab === "fixed-expenses"
-                ? "bg-white text-air-blue-900"
-                : "text-air-blue-100 hover:bg-white/10",
+                ? "bg-blue-600 text-white"
+                : "text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10",
             )}
           >
             Despesas Fixas
@@ -329,8 +329,8 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
             className={cn(
               "rounded-full px-4 py-2 transition",
               activeTab === "variable-expenses"
-                ? "bg-white text-air-blue-900"
-                : "text-air-blue-100 hover:bg-white/10",
+                ? "bg-blue-600 text-white"
+                : "text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10",
             )}
           >
             Despesas Variáveis
@@ -339,7 +339,7 @@ export function EditorPanel({ canManage }: EditorPanelProps) {
       </div>
 
       {globalError ? (
-        <div className="mt-4 rounded-lg border border-red-200/50 bg-red-500/10 p-4 text-sm text-red-200">
+        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 dark:bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-200">
           {globalError}
         </div>
       ) : null}
@@ -486,15 +486,15 @@ function AircraftManager({ aircraft, loading, onRefresh, canManage }: AircraftMa
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-        <h3 className="text-lg font-semibold">Aeronaves registradas</h3>
-        <p className="mt-1 text-sm text-air-blue-200">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-700/50 p-6">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Aeronaves registradas</h3>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
           Cadastre suas aeronaves antes de lançar voos.
         </p>
-        <div className="mt-4 space-y-3 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-air-blue-100">
-          <div className="flex items-center justify-between text-white">
+        <div className="mt-4 space-y-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 p-4 text-sm text-slate-600 dark:text-slate-300">
+          <div className="flex items-center justify-between text-slate-900 dark:text-white">
             <span>Assinatura atual</span>
-            <strong className="text-base text-air-gold-300">
+            <strong className="text-base text-blue-600 dark:text-amber-400">
               {numberFormatter.format(baseMonthlyFee)} / mês
             </strong>
           </div>
@@ -516,37 +516,37 @@ function AircraftManager({ aircraft, loading, onRefresh, canManage }: AircraftMa
               {" por mês."}
             </p>
           )}
-          <div className="rounded-lg border border-white/10 bg-white/10 p-3 text-xs text-air-blue-200">
+          <div className="rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-slate-700 p-3 text-xs text-slate-500 dark:text-slate-400">
             <p>
               Caso cadastre outra aeronave agora, a assinatura passa para
               {" "}
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-slate-900 dark:text-white">
                 {numberFormatter.format(estimatedAfterCreation)} / mês
               </span>
               .
             </p>
           </div>
         </div>
-        <div className="mt-4 divide-y divide-white/10">
+        <div className="mt-4 divide-y divide-slate-200 dark:divide-white/10">
           {loading ? (
-            <div className="py-4 text-sm text-air-blue-200">Carregando aeronaves...</div>
+            <div className="py-4 text-sm text-slate-500 dark:text-slate-400">Carregando aeronaves...</div>
           ) : aircraft.length === 0 ? (
-            <div className="py-4 text-sm text-air-blue-200">
+            <div className="py-4 text-sm text-slate-500 dark:text-slate-400">
               Nenhuma aeronave cadastrada ainda.
             </div>
           ) : (
             aircraft.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col gap-2 py-4 text-sm text-white md:flex-row md:items-center md:justify-between"
+                className="flex flex-col gap-2 py-4 text-sm text-slate-900 dark:text-white md:flex-row md:items-center md:justify-between"
               >
                 <div>
                   <p className="text-base font-semibold">{item.tailNumber}</p>
-                  <p className="text-air-blue-200">
+                  <p className="text-slate-600 dark:text-slate-300">
                     {item.model ?? "Modelo não informado"}
                     {item.manufacturer ? ` · ${item.manufacturer}` : ""}
                   </p>
-                  <p className="text-xs text-air-blue-200">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {item.year ? `${item.year}` : "Ano não informado"} ·
                     {" "}
                     {item.status
@@ -554,7 +554,7 @@ function AircraftManager({ aircraft, loading, onRefresh, canManage }: AircraftMa
                       : "Status não informado"}
                   </p>
                 </div>
-                <div className="text-xs text-air-blue-200 md:text-right">
+                <div className="text-xs text-slate-500 dark:text-slate-400 md:text-right">
                   <p>Próxima manutenção: {formatDateOnly(item.nextMaintenance)}</p>
                   <p>Horas totais: {formatHours(item.totalHours)}</p>
                 </div>
@@ -567,36 +567,36 @@ function AircraftManager({ aircraft, loading, onRefresh, canManage }: AircraftMa
       {canManage ? (
         <form
           onSubmit={onSubmit}
-          className="rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur"
+          className="rounded-2xl border border-slate-200 dark:border-white/15 bg-white dark:bg-slate-800 p-6"
         >
           <div className="flex flex-col gap-2">
-            <h3 className="text-lg font-semibold">Cadastrar nova aeronave</h3>
-            <p className="text-sm text-air-blue-200">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Cadastrar nova aeronave</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300">
               Prefixos cadastrados ficam disponíveis imediatamente nos formulários de voo.
             </p>
           </div>
 
           {serverError ? (
-            <div className="mt-4 rounded-lg border border-red-200/50 bg-red-500/10 p-3 text-sm text-red-200">
+            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 dark:bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-200">
               {serverError}
             </div>
           ) : null}
 
           {requiresAddonConfirmation ? (
-            <div className="mt-4 space-y-3 rounded-xl border border-air-gold-200/40 bg-air-gold-100/5 p-4 text-sm text-air-blue-100">
-              <h4 className="text-base font-semibold text-white">Adicionar aeronave extra</h4>
+            <div className="mt-4 space-y-3 rounded-xl border border-amber-200 dark:border-amber-400/40 bg-amber-50 dark:bg-amber-900/10 p-4 text-sm text-slate-700 dark:text-slate-200">
+              <h4 className="text-base font-semibold text-slate-900 dark:text-white">Adicionar aeronave extra</h4>
               <p>
                 A estrutura padrão cobre até {includedAircraft} aeronaves por
                 {" "}
                 {numberFormatter.format(PLAN_CONFIG.basePlanPrice)} / mês. Para incluir um novo
                 prefixo e permitir a troca de coproprietários, precisamos confirmar o complemento de
                 {" "}
-                <span className="font-semibold text-air-gold-200">
+                <span className="font-semibold text-amber-700 dark:text-amber-400">
                   {numberFormatter.format(addonUnitPrice)} / mês
                 </span>
                 .
               </p>
-              <label className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/5 p-3 text-sm text-white">
+              <label className="flex items-start gap-3 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-700 p-3 text-sm text-slate-900 dark:text-white">
                 <input
                   id="confirmAddon"
                   type="checkbox"
@@ -606,7 +606,7 @@ function AircraftManager({ aircraft, loading, onRefresh, canManage }: AircraftMa
                   }}
                   onBlur={confirmAddonField.onBlur}
                   ref={confirmAddonField.ref}
-                  className="mt-1 h-4 w-4 rounded border border-white/40 bg-transparent text-air-gold-300 focus:ring-air-gold-300"
+                  className="mt-1 h-4 w-4 rounded border border-slate-300 dark:border-white/40 bg-transparent text-blue-600 dark:text-amber-400 focus:ring-blue-500 dark:focus:ring-amber-400"
                 />
                 <span>
                   Confirmo o acréscimo mensal de
@@ -621,93 +621,93 @@ function AircraftManager({ aircraft, loading, onRefresh, canManage }: AircraftMa
 
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="tailNumber">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="tailNumber">
                 Prefixo (ex: PR-AXX)
               </label>
               <input
                 id="tailNumber"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white placeholder:text-air-blue-200 focus:border-air-gold-300 focus:outline-none uppercase"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-amber-400 uppercase"
                 placeholder="PR-AXX"
                 {...register("tailNumber")}
               />
               {errors.tailNumber ? (
-                <p className="mt-1 text-xs text-red-200">{errors.tailNumber.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.tailNumber.message}</p>
               ) : null}
             </div>
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="model">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="model">
                 Modelo
               </label>
               <input
                 id="model"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white placeholder:text-air-blue-200 focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-amber-400"
                 placeholder="Phenom 300"
                 {...register("model")}
               />
               {errors.model ? (
-                <p className="mt-1 text-xs text-red-200">{errors.model.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.model.message}</p>
               ) : null}
             </div>
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="manufacturer">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="manufacturer">
                 Fabricante (opcional)
               </label>
               <input
                 id="manufacturer"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white placeholder:text-air-blue-200 focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-amber-400"
                 placeholder="Embraer"
                 {...register("manufacturer")}
               />
               {errors.manufacturer ? (
-                <p className="mt-1 text-xs text-red-200">{errors.manufacturer.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.manufacturer.message}</p>
               ) : null}
             </div>
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="year">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="year">
                 Ano (opcional)
               </label>
               <input
                 id="year"
                 type="number"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white placeholder:text-air-blue-200 focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-amber-400"
                 placeholder="2022"
                 {...register("year")}
               />
               {errors.year ? (
-                <p className="mt-1 text-xs text-red-200">{errors.year.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.year.message}</p>
               ) : null}
             </div>
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="status">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="status">
                 Status
               </label>
               <select
                 id="status"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-amber-400"
                 {...register("status")}
               >
                 {aircraftStatusOptions.map((status) => (
-                  <option key={status} value={status} className="text-air-blue-900">
+                  <option key={status} value={status}>
                     {aircraftStatusLabels[status] ?? status}
                   </option>
                 ))}
               </select>
               {errors.status ? (
-                <p className="mt-1 text-xs text-red-200">{errors.status.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.status.message}</p>
               ) : null}
             </div>
             <div>
-              <label className="text-sm font-medium text-air-blue-100" htmlFor="nextMaintenance">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="nextMaintenance">
                 Próxima manutenção (opcional)
               </label>
               <input
                 id="nextMaintenance"
                 type="date"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-white focus:border-air-gold-300 focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-700 px-4 py-3 text-slate-900 dark:text-white focus:border-blue-500 dark:focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-amber-400"
                 {...register("nextMaintenance")}
               />
               {errors.nextMaintenance ? (
-                <p className="mt-1 text-xs text-red-200">{errors.nextMaintenance.message}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-300">{errors.nextMaintenance.message}</p>
               ) : null}
             </div>
           </div>
@@ -717,19 +717,19 @@ function AircraftManager({ aircraft, loading, onRefresh, canManage }: AircraftMa
             disabled={
               isSubmitting || (requiresAddonConfirmation && !confirmAddon)
             }
-            className="mt-6 w-full rounded-lg bg-air-gold-400 px-4 py-3 text-sm font-semibold text-air-blue-900 transition hover:bg-air-gold-300 disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-6 w-full rounded-lg bg-blue-600 dark:bg-amber-500 px-4 py-3 text-sm font-semibold text-white dark:text-slate-900 transition hover:bg-blue-700 dark:hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? "Cadastrando..." : "Cadastrar aeronave"}
           </button>
           {requiresAddonConfirmation && !confirmAddon ? (
-            <p className="mt-2 text-center text-xs text-air-gold-200">
+            <p className="mt-2 text-center text-xs text-amber-600 dark:text-amber-400">
               Marque a confirmação acima para prosseguir com a contratação do complemento.
             </p>
           ) : null}
         </form>
       ) : (
-        <div className="rounded-2xl border border-white/15 bg-white/5 p-6 text-sm text-air-blue-100 backdrop-blur">
-          <h3 className="text-lg font-semibold text-white">Acesso somente leitura</h3>
+        <div className="rounded-2xl border border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-slate-700/50 p-6 text-sm text-slate-600 dark:text-slate-300">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Acesso somente leitura</h3>
           <p className="mt-2">
             Entre em contato com um administrador/comandante caso precise cadastrar novas aeronaves
             ou atualizar dados de frota.
