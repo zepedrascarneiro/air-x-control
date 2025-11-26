@@ -9,6 +9,8 @@ import {
   PlanType 
 } from '@/lib/stripe';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/stripe/checkout
  * Cria uma sessão de checkout para upgrade de plano
