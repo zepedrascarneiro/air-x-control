@@ -23,7 +23,9 @@ import {
   CreditCard,
   Sparkles,
   ExternalLink,
+  XCircle,
 } from "lucide-react";
+import { CancelSubscriptionModal } from "@/components/cancel-subscription-modal";
 
 interface Member {
   id: string;
@@ -88,6 +90,7 @@ export default function SettingsPage() {
   const [editingMember, setEditingMember] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [userRole, setUserRole] = useState<string>("");
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -565,6 +568,19 @@ export default function SettingsPage() {
             )}
           </div>
 
+          {/* Cancelar Assinatura */}
+          {organization.plan !== "FREE" && userRole === "OWNER" && (
+            <div className="mt-4 pt-4 border-t border-white/20">
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="flex items-center justify-center gap-2 w-full px-4 py-2 text-white/70 hover:text-white hover:bg-white/10 font-medium rounded-xl transition-colors text-sm"
+              >
+                <XCircle className="w-4 h-4" />
+                Cancelar Assinatura
+              </button>
+            </div>
+          )}
+
           {organization.plan === "FREE" && (
             <p className="mt-4 text-sm text-blue-100 text-center">
               Upgrade para desbloquear mais aeronaves, usuários ilimitados e relatórios avançados.
@@ -572,6 +588,18 @@ export default function SettingsPage() {
           )}
         </section>
       </main>
+
+      {/* Modal de Cancelamento */}
+      <CancelSubscriptionModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onSuccess={() => {
+          // Recarregar dados após cancelamento
+          loadData();
+        }}
+        planName={organization.plan === "PRO" ? "Profissional" : organization.plan}
+        periodEnd={organization.subscriptionPeriodEnd}
+      />
     </div>
   );
 }
