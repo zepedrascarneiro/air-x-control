@@ -6,6 +6,7 @@ import { randomBytes, createHash } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "airx_session";
+const ORGANIZATION_COOKIE = "airx_org";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 dias
 const SESSION_TOKEN_BYTES = 32;
 
@@ -167,6 +168,63 @@ export async function requireCurrentUser() {
   }
 
   return user;
+}
+
+/**
+ * Obtém a organização ativa do usuário atual
+ */
+export async function getCurrentOrganization() {
+  const user = await getCurrentUser();
+  if (!user) return null;
+
+  // Verifica se tem cookie de organização selecionada
+  const orgIdFromCookie = cookies().get(ORGANIZATION_COOKIE)?.value;
+  
+  // Busca a associação do usuário com a organização
+  const member = await prisma.organizationMember.findFirst({
+    where: {
+      userId: user.id,
+      status: "ACTIVE",
+      ...(orgIdFromCookie ? { organizationId: orgIdFromCookie } : {}),
+      organization: { status: "ACTIVE" }
+    },
+    include: {
+      organization: true
+    },
+    orderBy: { joinedAt: "asc" }
+  });
+
+  if (!member) return null;
+
+  return {
+    ...member.organization,
+    memberRole: member.role,
+    ownershipPct: member.ownershipPct,
+  };
+}
+
+/**
+ * Verifica se o usuário pode gerenciar na organização atual
+ */
+export async function canManageCurrentOrganization() {
+  const org = await getCurrentOrganization();
+  if (!org) return false;
+  return ["OWNER", "ADMIN", "CONTROLLER"].includes(org.memberRole);
+}
+
+/**
+ * Requer usuário logado E organização ativa
+ */
+export async function requireUserWithOrganization() {
+  const user = await requireCurrentUser();
+  const organization = await getCurrentOrganization();
+
+  if (!organization) {
+    // Usuário não tem organização - redireciona para criar/entrar
+    redirect("/onboarding");
+  }
+
+  return { user, organization };
 }
 
 export function getSessionMetadataFromRequest(request: Request): SessionMetadata {

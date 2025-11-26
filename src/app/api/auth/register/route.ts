@@ -10,6 +10,7 @@ import {
 } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validators";
+import { createOrganization, joinOrganization } from "@/lib/organization";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,20 @@ export async function POST(request: Request) {
         role: parsed.role ?? undefined,
       },
     });
+
+    // Se forneceu código de compartilhamento, entra na organização existente
+    // Senão, cria uma nova organização para o usuário
+    if (parsed.shareCode) {
+      try {
+        await joinOrganization(user.id, parsed.shareCode, "VIEWER");
+      } catch {
+        // Código inválido - cria organização própria
+        await createOrganization(`Conta de ${parsed.name}`, user.id);
+      }
+    } else {
+      // Criar organização padrão para o novo usuário
+      await createOrganization(`Conta de ${parsed.name}`, user.id);
+    }
 
     const { token } = await createSession(
       user.id,

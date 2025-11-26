@@ -38,7 +38,7 @@ import {
 import { MonthlyTimeline } from "@/components/dashboard/monthly-timeline";
 import { ExportPdfButton } from "@/components/dashboard/export-pdf-button";
 import { LogoutButton } from "@/components/logout-button";
-import { requireCurrentUser } from "@/lib/auth";
+import { requireCurrentUser, getCurrentOrganization } from "@/lib/auth";
 import { getDashboardData } from "@/lib/dashboard";
 import { formatCurrency } from "@/lib/utils";
 
@@ -165,8 +165,26 @@ export default async function DashboardPage({
 }) {
   const { period, startDate, endDate } = resolvePeriod(searchParams);
   const user = await requireCurrentUser();
-  const data = await getDashboardData({ startDate, endDate });
-  const canManage = user.role === "ADMIN" || user.role === "CONTROLLER";
+  const organization = await getCurrentOrganization();
+  
+  // Se não tiver organização, redireciona para onboarding
+  if (!organization) {
+    const { redirect } = await import("next/navigation");
+    redirect("/onboarding");
+    return null; // TypeScript precisa disso
+  }
+  
+  const organizationId = organization.id;
+  const memberRole = organization.memberRole;
+  
+  const data = await getDashboardData({ 
+    startDate, 
+    endDate, 
+    organizationId 
+  });
+  
+  // Verifica permissão de gerenciar baseado na role do membro na organização
+  const canManage = ["OWNER", "ADMIN", "CONTROLLER"].includes(memberRole);
   
   const {
     summary,

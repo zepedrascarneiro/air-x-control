@@ -7,18 +7,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================
+// MULTI-TENANCY: Organização (Conta Principal)
+// ============================================
+model Organization {
+  id          String   @id @default(cuid())
+  name        String                         // Nome da organização/conta
+  slug        String   @unique               // URL amigável (ex: "ps-srq")
+  shareCode   String   @unique               // Código de compartilhamento (ex: "AIRX-7K9M2")
+  plan        String   @default("FREE")      // FREE, STARTER, PRO, ENTERPRISE
+  status      String   @default("ACTIVE")    // ACTIVE, SUSPENDED, CANCELLED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  members     OrganizationMember[]
+  aircraft    Aircraft[]
+  flights     Flight[]
+  expenses    Expense[]
+  bookings    Booking[]
+}
+
+// Membros da Organização (relacionamento User <-> Organization)
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  role           String   @default("VIEWER")  // OWNER, ADMIN, CONTROLLER, PILOT, VIEWER
+  ownershipPct   Decimal? @default(0)         // Percentual de participação na aeronave
+  status         String   @default("ACTIVE")  // ACTIVE, INVITED, INACTIVE
+  joinedAt       DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userId         String
+  organizationId String
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+}
+
 model User {
   id             String     @id @default(cuid())
   name           String
   email          String     @unique
   hashedPassword String
-  role           String     @default("VIEWER")
+  role           String     @default("VIEWER")  // Role global (para admin do sistema)
   status         String     @default("ACTIVE")
   phone          String?
-  ownershipPct   Decimal?   @default(0)  // Percentual de participação (ex: 25.5 = 25.5%)
+  ownershipPct   Decimal?   @default(0)  // Deprecado - usar OrganizationMember.ownershipPct
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
+  // Organizações do usuário
+  organizations    OrganizationMember[]
+  
   flightsAsPilot   Flight[]   @relation("FlightPilot")
   flightsAsPayer   Flight[]   @relation("FlightPayer")
   flightsAsUsedBy  Flight[]   @relation("FlightUsedBy")
@@ -33,7 +75,7 @@ model User {
 
 model Aircraft {
   id              String   @id @default(cuid())
-  tailNumber      String   @unique
+  tailNumber      String   @unique  // Matrícula é única globalmente (padrão ANAC)
   model           String
   manufacturer    String?
   year            Int?
@@ -42,6 +84,10 @@ model Aircraft {
   nextMaintenance DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  // Multi-tenancy
+  organizationId  String?
+  organization    Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   flights  Flight[]
   bookings Booking[]
@@ -67,6 +113,10 @@ model Flight {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
+  // Multi-tenancy
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   pilotId    String?
   payerId    String?
   aircraftId String?
@@ -88,6 +138,10 @@ model Expense {
   notes       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Multi-tenancy
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   paidById String?
   flightId String?
@@ -138,6 +192,10 @@ model Booking {
   
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  // Multi-tenancy
+  organizationId  String?
+  organization    Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   // Relacionamentos
   aircraftId      String

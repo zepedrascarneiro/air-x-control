@@ -111,15 +111,24 @@ function buildMonthlyTimeline({
   );
 }
 
-export async function getDashboardData(params?: { startDate?: Date; endDate?: Date }) {
+export async function getDashboardData(params?: { 
+  startDate?: Date; 
+  endDate?: Date;
+  organizationId?: string | null;
+}) {
   const now = new Date();
   const defaultStart = startOfMonth(now);
   const defaultEnd = endOfDay(now);
 
   const startDate = params?.startDate ?? defaultStart;
   const endDate = params?.endDate ?? defaultEnd;
+  const organizationId = params?.organizationId;
+
+  // Filtro base por organização
+  const orgFilter = organizationId ? { organizationId } : {};
 
   const aircraftsPromise = prisma.aircraft.findMany({
+    where: orgFilter,
     select: {
       id: true,
       tailNumber: true,
@@ -132,28 +141,57 @@ export async function getDashboardData(params?: { startDate?: Date; endDate?: Da
     },
   });
 
-  const ownersPromise = prisma.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      role: true,
-      ownershipPct: true,
-    },
-    where: {
-      role: {
-        in: ["ADMIN", "CONTROLLER", "VIEWER"],
-      },
-      status: "ACTIVE",
-    },
-    orderBy: {
-      name: "asc",
-    },
-  });
+  // Se tiver organização, busca membros da organização
+  // Senão, busca usuários globalmente (compatibilidade)
+  const ownersPromise = organizationId 
+    ? prisma.organizationMember.findMany({
+        where: { 
+          organizationId,
+          status: "ACTIVE",
+        },
+        select: {
+          id: true,
+          role: true,
+          ownershipPct: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+            }
+          }
+        },
+        orderBy: {
+          user: { name: "asc" }
+        },
+      }).then(members => members.map(m => ({
+        id: m.user.id,
+        name: m.user.name,
+        role: m.role,
+        ownershipPct: m.ownershipPct,
+      })))
+    : prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          role: true,
+          ownershipPct: true,
+        },
+        where: {
+          role: {
+            in: ["ADMIN", "CONTROLLER", "VIEWER"],
+          },
+          status: "ACTIVE",
+        },
+        orderBy: {
+          name: "asc",
+        },
+      });
 
   const [aircrafts, owners] = await Promise.all([aircraftsPromise, ownersPromise]);
 
   const flightsWithinPeriod = await prisma.flight.findMany({
     where: {
+      ...orgFilter,
       flightDate: {
         gte: startDate,
         lte: endDate,
@@ -184,6 +222,7 @@ export async function getDashboardData(params?: { startDate?: Date; endDate?: Da
 
   const expensesWithinPeriod = await prisma.expense.findMany({
     where: {
+      ...orgFilter,
       expenseDate: {
         gte: startDate,
         lte: endDate,
@@ -210,6 +249,7 @@ export async function getDashboardData(params?: { startDate?: Date; endDate?: Da
 
   const upcomingFlights = await prisma.flight.findMany({
     where: {
+      ...orgFilter,
       flightDate: {
         gte: startOfDay(now),
       },
@@ -234,9 +274,9 @@ export async function getDashboardData(params?: { startDate?: Date; endDate?: Da
   });
 
   const totalAircraft = aircrafts.length;
-  const availableAircraft = aircrafts.filter((aircraft) => aircraft.status === "AVAILABLE").length;
+  const availableAircraft = aircrafts.filter((aircraft: { status: string | null }) => aircraft.status === "AVAILABLE").length;
   const totalFleetHours = aircrafts.reduce(
-    (sum, aircraft) => sum + decimalToNumber(aircraft.totalHours),
+    (sum: number, aircraft: { totalHours: unknown }) => sum + decimalToNumber(aircraft.totalHours),
     0,
   );
 
@@ -292,11 +332,11 @@ export async function getDashboardData(params?: { startDate?: Date; endDate?: Da
   // Calcular divisão de custos proporcional por owner
   const totalSharedAmount = totalCostInPeriod + totalExpensesInPeriod;
   const totalOwnershipPct = owners.reduce(
-    (sum, owner) => sum + decimalToNumber(owner.ownershipPct),
+    (sum: number, owner: { ownershipPct: unknown }) => sum + decimalToNumber(owner.ownershipPct),
     0
   );
 
-  const ownersWithShare = owners.map((owner) => {
+  const ownersWithShare = owners.map((owner: { id: string; name: string; role: string; ownershipPct: unknown }) => {
     const ownerPct = decimalToNumber(owner.ownershipPct);
     // Se nenhum owner tem percentual definido, divide igualmente
     const percentage = totalOwnershipPct > 0 

@@ -146,6 +146,8 @@ export const registerSchema = z
         .optional(),
     ),
     role: z.enum(["ADMIN", "CONTROLLER", "VIEWER", "PILOT", "CTM"]).optional(),
+    shareCode: optionalString.pipe(z.string().optional()), // Código para entrar em organização existente
+    organizationName: optionalString.pipe(z.string().min(3).optional()), // Nome da nova organização
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
